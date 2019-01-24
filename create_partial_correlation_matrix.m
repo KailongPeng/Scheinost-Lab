@@ -3,18 +3,23 @@
 clear all;close all; clc;
 restoredefaultpath;
 if isdir('/home/kailong/Scheinost-Lab')
-    workdingdir = '/home/kailong/Scheinost-Lab';
+    workdingdir = '/home/kailong/Desktop/';
+    addpath('/home/kailong/Scheinost-Lab');
 else
     workingdir = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/';
+    addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab')
 end
 
-addpath('Scheinost-Lab');
-folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
+folder = [workdingdir 'results_matrix_268_110817'];
 fileList = dir([folder '/*txt']);
 
 %TRT005_2_TB_S006_bis_matrix_roimean.txt.txt
 %TRT[subject]_[session]_[scanner]_S00[run]*
-t = extractfield(fileList,'name');
+% t = extractfield(fileList,'name');
+t = cell(1,size(fileList,1));
+for curr_file = 1:size(fileList,1)
+    t{curr_file} = fileList(curr_file).name;
+end
 fileList = [];
 fileList = t;
 t = [];
