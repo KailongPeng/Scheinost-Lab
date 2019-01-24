@@ -26,7 +26,7 @@ t = [];
 if ~isdir([folder '/partial_correlation'])
     mkdir([folder '/partial_correlation']);
 end
-for curr_file = 1:size(fileList,2)
+parfor curr_file = 1:size(fileList,2)
     filename = [folder '/' fileList{curr_file}];
     savefile = [folder '/partial_correlation/' fileList{curr_file}(1:end-4)];
     if exist([savefile '.mat'])
