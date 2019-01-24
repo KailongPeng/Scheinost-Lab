@@ -1,5 +1,11 @@
 clear all;close all; clc;
 restoredefaultpath;
+if isdir('/home/kailong/Desktop/Scheinost-Lab')
+    workingdir = '/home/kailong/Desktop/Scheinost-Lab/';
+else
+    workingdir = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/';
+end
+
 addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab');
 
 folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
