@@ -1,8 +1,14 @@
 clear all;close all; clc;
 restoredefaultpath;
-addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab');
+if isdir('/home/kailong/Scheinost-Lab')
+    workdingdir = '/home/kailong/Desktop/';
+    addpath('/home/kailong/Scheinost-Lab');
+else
+    workingdir = '/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/';
+    addpath('/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab')
+end
 
-folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
+folder = [workdingdir 'results_matrix_268_110817'];
 kailongLog = [];
 curr_log = 1;
 % average across runs (one file for each session) 

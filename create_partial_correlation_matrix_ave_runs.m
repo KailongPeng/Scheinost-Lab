@@ -1,14 +1,13 @@
 clear all;close all; clc;
 restoredefaultpath;
-if isdir('/home/kailong/Desktop/Scheinost-Lab')
-    workingdir = '/home/kailong/Desktop/Scheinost-Lab/';
+if isdir('/home/kailong/Scheinost-Lab')
+    workdingdir = '/home/kailong/Desktop/';
+    addpath('/home/kailong/Scheinost-Lab');
 else
-    workingdir = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/';
+    workingdir = '/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/';
+    addpath('/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab')
 end
-
-addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab');
-
-folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
+folder = [workdingdir 'results_matrix_268_110817'];
 kailongLog = [];
 curr_log = 1;
 % average across runs (one file for each session) 
