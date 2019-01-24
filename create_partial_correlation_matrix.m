@@ -26,13 +26,19 @@ t = [];
 if ~isdir([folder '/partial_correlation'])
     mkdir([folder '/partial_correlation']);
 end
-parfor curr_file = 1:size(fileList,2)
+for curr_file = 1:size(fileList,2)
     filename = [folder '/' fileList{curr_file}];
     savefile = [folder '/partial_correlation/' fileList{curr_file}(1:end-4)];
     if exist([savefile '.mat'])
 %         movefile([savefile '.mat'],[newsavefile '.mat']);
         fprintf('file exist\n')
         continue;
+    end
+    lock_file = [savefile '_lock'];
+    if exist([savefile '_lock.mat'])
+        continue;
+    else
+        save([savefile '_lock'],'lock_file')
     end
     curr_run_data = [];
     curr_run_data = readtable(filename);
@@ -48,6 +54,7 @@ parfor curr_file = 1:size(fileList,2)
     rho = [];
     filename = [];
     savefile = [];
+    delete([savefile '_lock.mat']);
 end
 
 
