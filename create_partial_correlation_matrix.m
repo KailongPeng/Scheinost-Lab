@@ -6,7 +6,7 @@ addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Sch
 folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
 fileList = dir([folder '/*txt']);
 
-%TRT005_2_TB_S006_bis_matrix_roimean.txt
+%TRT005_2_TB_S006_bis_matrix_roimean.txt.txt
 %TRT[subject]_[session]_[scanner]_S00[run]*
 t = extractfield(fileList,'name');
 fileList = [];
