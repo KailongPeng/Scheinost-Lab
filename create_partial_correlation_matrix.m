@@ -2,7 +2,13 @@
 %NBS: network based statistics
 clear all;close all; clc;
 restoredefaultpath;
-addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab');
+if isdir('/home/kailong/Scheinost-Lab')
+    workdingdir = '/home/kailong/Scheinost-Lab';
+else
+    workingdir = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/';
+end
+
+addpath('Scheinost-Lab');
 folder = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/results_matrix_268_110817';
 fileList = dir([folder '/*txt']);
 
