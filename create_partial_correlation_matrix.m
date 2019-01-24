@@ -6,8 +6,8 @@ if isdir('/home/kailong/Scheinost-Lab')
     workdingdir = '/home/kailong/Desktop/';
     addpath('/home/kailong/Scheinost-Lab');
 else
-    workingdir = '/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/';
-    addpath('/Users/pengkailong/Desktop/0 Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab')
+    workingdir = '/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/';
+    addpath('/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab')
 end
 
 folder = [workdingdir 'results_matrix_268_110817'];
