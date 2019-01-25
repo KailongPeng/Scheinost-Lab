@@ -11,6 +11,7 @@
 
 clear all;close all;clc;
 
+%{
 %pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST2_LR/matrices/';
 pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/EMOTION_LR/matrices/';
 
@@ -26,7 +27,11 @@ id = id.all_id;
 behavior = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat');
 behavior = behavior.all_behav;
 % notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
+%}
+addpath('/home/kailong/Scheinost-Lab')
+addpath('/home/kailong/CPM/matlab')
+load ('/home/kailong/Desktop/mega_sample_200_female_subjs.mat')
 
 
-[y_predict, performance] = cpm_main(connectivity_matrices,behavior,'pthresh',0.05,'kfolds',2)
+[y_predict, performance] = cpm_main(MxMxN_matrix_FEMALE_HC_200,all_behav_FEMALE_200,'pthresh',0.05,'kfolds',2);
 
