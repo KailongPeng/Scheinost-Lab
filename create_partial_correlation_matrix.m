@@ -52,9 +52,9 @@ for curr_file = 1:size(fileList,2)
     
     save(savefile,'rho');
     rho = [];
-    filename = [];
-    savefile = [];
+    filename = [];    
     delete([savefile '_lock.mat']);
+    savefile = [];
 end
 
 
