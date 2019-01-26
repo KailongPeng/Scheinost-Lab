@@ -29,9 +29,8 @@ for curr_id = 1:size(id,1) % find the filenameID that is among the id list
     Index{curr_id} = find(contains(fileList,num2str(id(curr_id)))==1);
 end
 
-
-
-find(strcmp(
+for curr_sub = 1:size(id,1)
+    id(curr_sub)
 
 filename = [pathname '100206_REST2_LR_GSR_matrix.txt'];
 connectivity_matrices = readtable(pathname);

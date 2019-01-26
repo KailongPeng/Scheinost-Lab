@@ -1,7 +1,7 @@
 function [data,ftbl] = load_reliability_data(thisFolder, thisPattern)
 % built to parse metadata from traveling_subs and test_retest
 % supports regex
-% e.g., [data,ftbl] = load_trt_files('/Users/stephanie/Documents/data/mnt/gsr_unism/','.*matrix_.\.nii\.gz');
+% e.g., [data,ftbl] = load_trt_files('/Users/stephanie/Documents/data/mnt/gsr_unism/','.*roi_.\.nii\.gz');
 % out:
 %   ftbl(subj,scanner,day)
 %   data = cell matrix; each cell contains an image vector corresponding with a file
@@ -9,7 +9,7 @@ function [data,ftbl] = load_reliability_data(thisFolder, thisPattern)
 
 flag_studytype=0;
 
-if ~isdir(thisFolder)
+if ~isfolder(thisFolder)
   errorMessage = sprintf('Error: The following folder does not exist:\n%s', thisFolder);
   uiwait(warndlg(errorMessage));
   return;
@@ -22,9 +22,9 @@ end
 theseFiles = regexpdir(thisFolder, thisPattern);
 
 if isempty(theseFiles)
-  errorMessage = sprintf('Error: Nothing found matching\n%s', thisPattern);
-  uiwait(warndlg(errorMessage));
-  return;
+    errorMessage = sprintf('Error: Nothing found matching\n%s', thisPattern);
+    uiwait(warndlg(errorMessage));
+    return;
 end
 
 
@@ -75,10 +75,27 @@ for k = 1:length(theseFiles)
     %       a=readtable(fullFileName,'delimiter', 'tab');
     %       a(:,3) = [];
     %       output{k} = a; 
-
-    a = load_untouch_nii(fullFileName);
-    data{k} = a.img;
-  
+    %{
+    tic
+    clear temp;
+    temp = readtable(fullFileName,'ReadVariableNames',false);
+    temp(:,1) = [];
+    temp(:,end) = [];
+    temp(1,:) = [];
+    temp = table2array(temp);
+    temp = cellfun(@(x) str2double(x),temp);
+    data{k} = temp;
+    clear temp;
+    toc
+    %}
+    clear temp;
+    temp = readtable(fullFileName);
+    temp(:,1) = [];
+    temp(:,end) = [];
+    temp = table2array(temp);
+    data{k} = temp;
+    clear temp;
+    
     if strcmp(study_type,'traveling_subs')
         % file prototype: 01_V3000_2_bis_matrix.nii
         % ftbl: subj scanner day (within a particular scanner)
@@ -112,7 +129,7 @@ for k = 1:length(theseFiles)
         ftbl(k,2)=str2num(this_scanner);
         % day/occasion is added after reading all
         if ~(strcmp(this_run,'_'))
-                ftbl(k,4)=str2num(this_run);
+            ftbl(k,4)=str2num(this_run);
             else ftbl(k,4)=1;
         end
         ftbl(k,5)=str2num(this_session);
@@ -122,7 +139,7 @@ for k = 1:length(theseFiles)
     
 end
 
-% assign day/occasion
+% assign day/occasion (corrected session with same scanner)
 if strcmp(study_type,'test_retest')
     for subj=unique(ftbl(:,1))'
         for scanner=unique(ftbl(:,2))'
