@@ -3,14 +3,29 @@
 %table to "run_reliability". Use "none" for the correction type.
 
 clear all;close all;clc;
+
 restoredefaultpath;
-addpath('/home/kailong/Scheinost-Lab/ICC_toolbox')
+addpath(genpath('/home/kailong/Scheinost-Lab/'));
+% cd('/home/kailong/Scheinost-Lab/ICC_toolbox')
+% show = 'show';
+% save('/home/kailong/Scheinost-Lab/ICC_toolbox/show','show');
 
 thisFolder = '/home/kailong/Desktop/results_matrix_268_110817/';
 thisPattern = '.*roimean\.txt';
 [data,ftbl] = load_reliability_data(thisFolder, thisPattern);
 %ftbl: 1:subj(1-12) 2:scanner(1-2) 3:corrected session with same scanner 4:run(1-6) 5:session(1-4)
 save(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
+load(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
+%check data format
+matsize = cell2mat(cellfun((@(x) size(x)),data,'UniformOutput',0));
+ID1 = find(matsize(1:2:end) ~= mode(matsize(1:2:end)));
+ID2 = find(matsize(2:2:end) ~= mode(matsize(2:2:end)));
+ID_to_delete = [ID1 ID2];
+for curr_ID2delete = size(ID_to_delete,2):-1:1
+    data{ID_to_delete(curr_ID2delete)}=[];
+end
+data = data(~cellfun('isempty',data));
+
 correctiontype = 'none';
 [icc_summary,var,stats,sigmask] = run_reliability(correctiontype,data,ftbl);
 
