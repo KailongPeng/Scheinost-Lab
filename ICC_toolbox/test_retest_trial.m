@@ -15,6 +15,8 @@ thisPattern = '.*roimean\.txt';
 [data,ftbl] = load_reliability_data(thisFolder, thisPattern);
 %ftbl: 1:subj(1-12) 2:scanner(1-2) 3:corrected session with same scanner 4:run(1-6) 5:session(1-4)
 save(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
+
+
 load(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
 %check data format
 matsize = cell2mat(cellfun((@(x) size(x)),data,'UniformOutput',0));
