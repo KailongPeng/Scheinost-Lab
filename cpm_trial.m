@@ -2,40 +2,45 @@
 %can be found in /data1/software/HCP_data/HCP_900_DATA/TASK_[RL/LR]/matrices/###*.txt 
 %with ### = subject ID. 
 
-
 %IDs for the 515 subjects we used in the NComms paper are in 
-%/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat and pmat scores 
+%/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat and pmat scores
 %for those subjects can be found in /mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat. 
+
 %Indices of nodes that are missing in any subjects can be found in 
 %/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat. 
 
 clear all;close all;clc;
-
+restoredefaultpath;
+addpath(genpath('/home/kailong/Scheinost-Lab/'));
 %pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST2_LR/matrices/';
-pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/EMOTION_LR/matrices/';
+pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST_LR/matrices/';
 
 
-%cd(pathname);
+cd(pathname);
 clear a;
-a = dir([pathname '*_GSR_*']);
+a = dir([pathname '*_GSR_roimean*']);
 fileList = kailong_extractfield(a,'name');
 clear a;
 id = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat');
 id = id.all_id;
+id = sort(id);
 % for curr_id = 1:size(id,1) % find the filenameID that is among the id list
 %     Index{curr_id} = find(~cellfun(@isempty,strfind(fileList, num2str(id(curr_id)))));
 % end
 for curr_id = 1:size(id,1) % find the filenameID that is among the id list
-    Index{curr_id} = find(contains(fileList,num2str(id(curr_id)))==1);
+    index{curr_id} = find(contains(fileList,num2str(id(curr_id)))==1);
 end
-
+new_file_list = [];
 for curr_sub = 1:size(id,1)
-    id(curr_sub)
-
-filename = [pathname '100206_REST2_LR_GSR_matrix.txt'];
-connectivity_matrices = readtable(pathname);
-connectivity_matrices(:,end) = [];
-connectivity_matrices = table2array(connectivity_matrices);
+    new_file_list{curr_sub} = fileList{index{curr_sub}};
+end
+for curr_sub = 1:size(new_file_list,2)
+    filename = [pathname new_file_list{curr_sub}];
+    
+    connectivity_matrices = readtable(pathname);
+    connectivity_matrices(:,end) = [];
+    connectivity_matrices = table2array(connectivity_matrices);
+    
 behavior = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat');
 behavior = behavior.all_behav;
 % notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');

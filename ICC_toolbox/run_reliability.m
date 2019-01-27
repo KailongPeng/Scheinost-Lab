@@ -36,7 +36,7 @@ elseif size(varargin,2)==2
         t(i)=sum(ftbl(:,1)==i);
     end
 
-    if length(unique(t))>2  % 2 bc unique includes "0"
+    if length(unique(t))>2  % 2 because unique includes "0"
         disp('Runs per subject:')
         disp(sprintf('%d ',unique(t)))
         error('Missing data. Please remove partial data.')
