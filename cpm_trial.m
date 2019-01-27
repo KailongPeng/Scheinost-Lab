@@ -13,9 +13,8 @@ clear all;close all;clc;
 restoredefaultpath;
 addpath(genpath('/home/kailong/Scheinost-Lab/'));
 %pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST2_LR/matrices/';
+task_list = {'EMOTION_LR' 'EMOTION_RL' ''}
 pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST_LR/matrices/';
-
-
 cd(pathname);
 clear a;
 a = dir([pathname '*_GSR_roimean*']);
@@ -45,18 +44,19 @@ parfor curr_sub = 1:size(new_file_list,2)
     shift = [];
     cr_max = []; %curr_data cr lgs corrected_cr_max
 end
-    
 save(['/home/kailong/Desktop/results_matrix_268_110817/MxMxN_matrix_REST_LR'],'MxMxN_matrix_REST_LR');
+
+
+
+% notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
 
 behavior = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat');
 behavior = behavior.all_behav;
-% notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
-
+load (['/home/kailong/Desktop/results_matrix_268_110817/MxMxN_matrix_REST_LR.mat'])
+[y_predict, performance] = cpm_main(MxMxN_matrix_REST_LR,behavior,'pthresh',0.05,'kfolds',2);
 
 %{
 load ('/home/kailong/Desktop/mega_sample_200_female_subjs.mat')
-
-
 [y_predict, performance] = cpm_main(MxMxN_matrix_FEMALE_HC_200,all_behav_FEMALE_200,'pthresh',0.05,'kfolds',2);
-1;
+performance
 %}
