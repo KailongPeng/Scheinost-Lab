@@ -32,7 +32,7 @@ for curr_file = 1:size(fileList,2)
         fprintf('file exist\n')
         continue;
     end
-    curr_run_data = [];
+    clear curr_run_data ;
     curr_run_data = readtable(filename);
     curr_run_data(:,end) = [];
     curr_run_data(:,1) = [];

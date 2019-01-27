@@ -34,21 +34,26 @@ new_file_list = [];
 for curr_sub = 1:size(id,1)
     new_file_list{curr_sub} = fileList{index{curr_sub}};
 end
-for curr_sub = 1:size(new_file_list,2)
+
+clear MxMxN_matrix_REST_LR filename shift cr_max %curr_data cr lgs corrected_cr_max
+parfor curr_sub = 1:size(new_file_list,2)
+    curr_sub
     filename = [pathname new_file_list{curr_sub}];
+    [cr_max,shift] = create_max_correlation_matrix(filename);
+    MxMxN_matrix_REST_LR(:,:,curr_sub) = cr_max;
+    filename = [];
+    shift = [];
+    cr_max = []; %curr_data cr lgs corrected_cr_max
+end
     
-    connectivity_matrices = readtable(pathname);
-    connectivity_matrices(:,end) = [];
-    connectivity_matrices = table2array(connectivity_matrices);
-    
+save(['/home/kailong/Desktop/results_matrix_268_110817/MxMxN_matrix_REST_LR'],'MxMxN_matrix_REST_LR');
+
 behavior = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat');
 behavior = behavior.all_behav;
 % notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
 
 
 %{
-addpath('/home/kailong/Scheinost-Lab')
-addpath('/home/kailong/CPM/matlab')
 load ('/home/kailong/Desktop/mega_sample_200_female_subjs.mat')
 
 
