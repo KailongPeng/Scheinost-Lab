@@ -5,6 +5,9 @@ curr_data(:,1) = [];
 curr_data = table2array(curr_data);
 [cr,lgs] = xcorr(curr_data,10,'coeff');
 cr_max = max(abs(cr));
+if ~isempty(find(isnan(cr_max)==1))
+    error('nan')
+end
 [shift,corrected_cr_max] = findshift(cr,cr_max,lgs);
 cr_max = [];
 cr_max = corrected_cr_max;

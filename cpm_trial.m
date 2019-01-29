@@ -64,14 +64,18 @@ for curr_GSR = 1:size(GSR_list,2)
 
         clear  filename shift cr_max MxMxN_matrix_temp %curr_data cr lgs corrected_cr_max
         eval(['clear ' task_matrice])
-        parfor curr_sub = 1:size(new_file_list,2)
+        for curr_sub = 1:size(new_file_list,2)
             curr_sub
             filename = [pathname new_file_list{curr_sub}];
-            [cr_max,shift] = create_max_correlation_matrix(filename);
-            MxMxN_matrix_temp(:,:,curr_sub) = cr_max;
-            filename = [];
-            shift = [];
-            cr_max = []; %curr_data cr lgs corrected_cr_max
+            try
+                [cr_max,shift] = create_max_correlation_matrix(filename);
+                MxMxN_matrix_temp(:,:,curr_sub) = cr_max;
+                filename = [];
+                shift = [];
+                cr_max = []; %curr_data cr lgs corrected_cr_max
+            catch
+                warning('jumping subject')
+            end
         end
         eval([task_matrice ' = MxMxN_matrix_temp;'])
         if ~isdir(savefolder)
