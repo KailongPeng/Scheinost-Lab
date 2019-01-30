@@ -29,8 +29,8 @@ task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL' ...
 id = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat');
 id = id.all_id;
 id = sort(id);
-% GSR_list = {'GSR' 'NOGSR'};
-GSR_list = {'GSR'};
+GSR_list = {'GSR' 'NOGSR'};
+% GSR_list = {'GSR'};
 
 for curr_GSR = 1:size(GSR_list,2)
     GSR = GSR_list{curr_GSR};
@@ -62,18 +62,24 @@ for curr_GSR = 1:size(GSR_list,2)
             new_file_list{curr_sub} = fileList{index{curr_sub}};
         end
 
-        clear  filename shift cr_max MxMxN_matrix_temp %curr_data cr lgs corrected_cr_max
+        clear  filename shift cr_max MxMxN_matrix_temp sum_shift %curr_data cr lgs corrected_cr_max
         eval(['clear ' task_matrice])
-        for curr_sub = 1:size(new_file_list,2)
+        parfor curr_sub = 1:size(new_file_list,2)
             curr_sub
             filename = [pathname new_file_list{curr_sub}];
-            try
+            try % discard subjects with missing nodes
                 [cr_max,shift] = create_max_correlation_matrix(filename);
                 MxMxN_matrix_temp(:,:,curr_sub) = cr_max;
                 filename = [];
+                sum_shift(:,curr_sub) = shift;
                 shift = [];
                 cr_max = []; %curr_data cr lgs corrected_cr_max
             catch
+                MxMxN_matrix_temp(:,:,curr_sub) = nan;
+                filename = [];
+                sum_shift(:,curr_sub) = nan;
+                shift = [];
+                cr_max = []; %curr_data cr lgs corrected_cr_max
                 warning('jumping subject')
             end
         end
@@ -82,6 +88,7 @@ for curr_GSR = 1:size(GSR_list,2)
             mkdir(savefolder)
         end
         save([savefolder task_matrice],task_matrice);
+        save([savefolder task_matrice],'sum_shift','-append');
     end
 end
 missingnodes_hcp = load('/home/kailong/Scheinost-Lab/missingNodes.mat');
@@ -91,7 +98,7 @@ behavior = behavior.all_behav;
 for curr_GSR = 1:size(GSR_list,2)
     GSR = GSR_list{curr_GSR};
     for curr_task = 1:size(task_list,2)
-        clear task task_matrice
+        clear task task_matrice sum_shift
         task = task_list{curr_task};
         task_matrice = ['MxMxN_matrix_' task];
         savefolder = []; 
@@ -99,6 +106,7 @@ for curr_GSR = 1:size(GSR_list,2)
         load([savefolder task_matrice]);
         clear MxMxN_matrix_temp
         eval(['MxMxN_matrix_temp = ' task_matrice ';']);
+        MxMxN_matrix_temp = MxMxN_matrix_temp(:,:,~isnan(MxMxN_matrix_temp(1,1,:)));
         [y_predict, performance] = cpm_main(MxMxN_matrix_temp,behavior,'pthresh',0.05,'kfolds',2);
         save([savefolder task_matrice],'y_predict','performance','-append')
     end
