@@ -6,19 +6,18 @@
 %table to "run_reliability". Use "none" for the correction type.
 
 clear all;close all;clc;
-
 restoredefaultpath;
 addpath(genpath('/home/kailong/Scheinost-Lab/'));
 % cd('/home/kailong/Scheinost-Lab/ICC_toolbox')
 % show = 'show';
 % save('/home/kailong/Scheinost-Lab/ICC_toolbox/show','show');
-
-thisFolder = '/home/kailong/Desktop/results_matrix_268_110817/';
+thisFolder = '/mnt/store1/mridata2/mri_group/smn33_data/test_retest/results/results_matrix_268_110817';
+% thisFolder = '/home/kailong/Desktop/results_matrix_268_110817/';
 cd(thisFolder);
 thisPattern = '.*roimean\.txt';
 [data,ftbl] = load_reliability_data(thisFolder, thisPattern);
 %ftbl: 1:subj(1-12) 2:scanner(1-2) 3:corrected session with same scanner 4:run(1-6) 5:session(1-4)
-save(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
+save(['/home/kailong/Desktop/test_retest_trial_2'],'data','ftbl');
 
 clear all;close all;clc;
 load(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
