@@ -59,6 +59,7 @@ end
 
 %% Estimate Variance
 for i = 1:size(roi_data{1},1) % roi1
+    i
     for j = 1:size(roi_data{1},2) % roi2
         for k = 1:size(roi_data{1},3)
             
@@ -147,11 +148,11 @@ for i = 1:size(roi_data{1},1) % roi1
                 case 4
                     % 4-way ANOVA, 2- and 3-way interactions except run x session, 4-way interaction+residual
                     % can't do session instead of day
-
+                    tic
                     [pvals, tbl, anova_stats] = anovan(this_roidata, {factor_tbl(:,1) factor_tbl(:,2) factor_tbl(:,3) factor_tbl(:,4)}, ...
                         'model', 3, 'random', 1:num_factors, 'display', 'off',  'varnames', ...
                         {'Ref_Factor' 'Factor2' 'Factor3' 'Factor4'});
-                    
+                    toc
                     
                     % p r sc se
                     %model  =[1 0 0 0; 0 1 0 0; 0 0 1 0; 0 0 0 1; 1 1 0 0; 1 0 1 0; 1 0 0 1; 0 1 0 1; 0 0 1 1 ; 1 1 1 0; 1 0 1 1];

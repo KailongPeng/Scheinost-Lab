@@ -17,11 +17,17 @@ cd(thisFolder);
 thisPattern = '.*roimean\.txt';
 [data,ftbl] = load_reliability_data(thisFolder, thisPattern);
 %ftbl: 1:subj(1-12) 2:scanner(1-2) 3:corrected session with same scanner 4:run(1-6) 5:session(1-4)
+prompt = 'What is the run number each time? ';
+run_number = input(prompt);
+ftbl(:,4) = repmat([1:run_number]',[size(ftbl,1)/run_number,1]);
 save(['/home/kailong/Desktop/test_retest_trial_2'],'data','ftbl');
 
 clear all;close all;clc;
-load(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
-%check data format
+% load(['/home/kailong/Desktop/test_retest_trial'],'data','ftbl');
+load(['/home/kailong/Desktop/test_retest_trial_2.mat'],'data','ftbl');
+%{
+%check data format: find the runs that is not 6 min, e.g. shorter than 6
+%min= 360 datapoints
 matsize = cell2mat(cellfun((@(x) size(x)),data,'UniformOutput',0));
 ID1 = find(matsize(1:2:end) ~= mode(matsize(1:2:end)));
 ID2 = find(matsize(2:2:end) ~= mode(matsize(2:2:end)));
@@ -33,12 +39,16 @@ small_ID_to_delete = [ID1 ID2];
 % ftbl = ftbl(~cellfun('isempty',data),:);
 % data = data(~cellfun('isempty',data));
 
+% ftbl(find(ftbl(:,4)==7),1)
 suj_to_delete = ftbl(small_ID_to_delete,1);
 for ii = 1:size(suj_to_delete,1)
     ftbl(ftbl(:,1) == suj_to_delete(ii),:) = nan;
 end
 data = data(~isnan(ftbl(:,1)));
 ftbl = ftbl(~isnan(ftbl(:,1)),:);
+%}
+
+ftbl(:,3) = [];
 
 correctiontype = 'none';
 [icc_summary,var,stats,sigmask] = run_reliability(correctiontype,data,ftbl);

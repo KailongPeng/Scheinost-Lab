@@ -94,9 +94,9 @@ else % no GM mask bc matrix
     end
     
 end
-
+ 
 sigmask = create_sigedge_mask(masked_data,0.05,correctiontype); % "none"->all ones
-data_sig = get_masked_data(masked_data,sigmask);
+data_sig = get_masked_data(masked_data,sigmask,correctiontype);
 [icc_summary,var,stats]=calc_roi_iccs(data_sig,ftbl,'all');
 
 % if using no sigmask, still return a real sigmask in case it's needed for future analyses
