@@ -31,8 +31,8 @@ function [y_predict, performance] = cpm_main(x,y,varargin)
 
 %% Parse input
 p=inputParser;
-defaultpthresh=0.01;
-defaultkfolds=2; 
+defaultpthresh=0.01;%0.001
+defaultkfolds=2; %515 10
 
 addRequired(p,'x',@isnumeric);
 addRequired(p,'y',@isnumeric); % must be n x nsubs

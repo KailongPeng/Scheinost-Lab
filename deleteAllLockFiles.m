@@ -7,7 +7,8 @@ function [ FList ] = deleteAllLockFiles(DataFolder)
 findtext = '_lock.mat';
 if nargin < 1 
     if isdir('/home/kailong/Desktop') == 1 
-        DataFolder = '/home/kailong/Desktop/results_matrix_268_110817/partial_correlation';
+%         DataFolder = '/home/kailong/';
+        DataFolder = uigetdir;
 %     else
 %         DataFolder = '/gpfs/ysm/home/kp578/git/ML_spontaneous_activity/'; 
     end

@@ -17,16 +17,16 @@ addpath(genpath('/home/kailong/Scheinost-Lab/'));
 global kailongLog curr_log
 kailongLog = [];
 curr_log = 1;
-task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL' ...
-    'EMOTION_LR' 'EMOTION_RL' ...
-    'MOTOR_LR' 'MOTOR_RL'...
-    'SOCIAL_LR' 'SOCIAL_RL'...
-    'WM_LR' 'WM_RL'...
-    'GAMBLING_LR' 'GAMBLING_RL'...
-    'LANGUAGE_LR' 'LANGUAGE_RL'...
-    'RELATIONAL_LR' 'RELATIONAL_RL'...
-    };
-% task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL'};
+% task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL' ...
+%     'EMOTION_LR' 'EMOTION_RL' ...
+%     'MOTOR_LR' 'MOTOR_RL'...
+%     'SOCIAL_LR' 'SOCIAL_RL'...
+%     'WM_LR' 'WM_RL'...
+%     'GAMBLING_LR' 'GAMBLING_RL'...
+%     'LANGUAGE_LR' 'LANGUAGE_RL'...
+%     'RELATIONAL_LR' 'RELATIONAL_RL'...
+%     };
+task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL'};
 
 id = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat');
 id = id.all_id;
@@ -46,8 +46,15 @@ for curr_GSR = 1:size(GSR_list,2)
             mkdir(savefolder)
         end
         if exist([savefolder task_matrice '.mat'])
-            fprintf('exist\n')
-            continue
+            load([savefolder task_matrice '.mat'])
+            clear temp
+            eval(['temp = ' task_matrice ';']);
+            temp = temp(~isnan(temp));
+            if ~isempty(temp)
+                fprintf('exist\n')
+                continue
+            end
+            clear temp
         end
         lock_file = [savefolder task_matrice '_lock.mat'];        
         if exist(lock_file)
@@ -69,6 +76,7 @@ for curr_GSR = 1:size(GSR_list,2)
         % end
         for curr_id = 1:size(id,1) % find the filenameID that is among the id list
             if sum(contains(fileList,num2str(id(curr_id)))) ~= 0
+%             if sum(~isempty(find(fileList,num2str(id(curr_id))))) ~= 0
                 all_index{curr_id} = find(contains(fileList,num2str(id(curr_id)))==1);
             else
                 all_index{curr_id} = nan;
@@ -99,7 +107,7 @@ for curr_GSR = 1:size(GSR_list,2)
 %             continue
 %         end
 %         parpool('MyCluster',6);
-        parfor (curr_sub = 1:size(new_file_list,2),6);
+        parfor (curr_sub = 1:size(new_file_list,2),4)
             curr_sub
             filename = [pathname new_file_list{curr_sub}];
             try % discard subjects with missing nodes
@@ -123,7 +131,17 @@ for curr_GSR = 1:size(GSR_list,2)
         end
         map_ID = map_ID(~isnan(map_ID));
         kailongLog{curr_log} = Log;
-        curr_log = curr_log + 1;          
+        curr_log = curr_log + 1; 
+        
+        %check whether empty
+        clear temp
+        temp = MxMxN_matrix_temp;
+        temp = temp(~isnan(temp));
+        if isempty(temp)
+            error('empty matrix, check Log')
+        end
+        clear temp
+
         eval([task_matrice ' = MxMxN_matrix_temp;'])
         eval([task_matrice '_norm = MxMxN_matrix_temp_norm;'])
         save([savefolder task_matrice],task_matrice,[task_matrice '_norm']);
@@ -152,12 +170,47 @@ for curr_GSR = 1:size(GSR_list,2)
         task_matrice = ['MxMxN_matrix_' task];
         savefolder = []; 
         savefolder = ['/home/kailong/Desktop/results_matrix_268_110817/' GSR '/'];
-        clear MxMxN_matrix_temp sum_shift index all_index fileList
+        clear MxMxN_matrix_temp sum_shift index all_index fileList y summary_r summary_p
         load([savefolder task_matrice]);
+        
+        lock_file = [savefolder task_matrice '_lock2.mat'];        
+        if exist('y')
+            fprintf([task_matrice ' exist\n'])
+            continue
+        end
+        if exist(lock_file)
+            fprintf('occupied\n');
+            continue
+        else
+            save(lock_file,'lock_file');
+        end
+
+
         eval(['MxMxN_matrix_temp = ' task_matrice ';']);
         MxMxN_matrix_temp = MxMxN_matrix_temp(:,:,~isnan(MxMxN_matrix_temp(1,1,:)));
-        [y_predict, performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.05,'kfolds',2);
-        save([savefolder task_matrice],'y_predict','performance','-append')
+        p_value_list = [0.01 0.005 0.001];
+        kfold_list = [2,10,size(MxMxN_matrix_temp,3)];
+        curr_loop = 1;
+        tic
+        for curr_p = 1:size(p_value_list,2)
+            p = [];
+            p = p_value_list(curr_p);
+            for curr_kfold = 1:size(kfold_list,2)
+                kfold = [];
+                kfold = kfold_list(curr_kfold);
+                y{curr_loop}.p = p;
+                y{curr_loop}.kfold = kfold;
+                try
+                    [y{curr_loop}.y_predict, y{curr_loop}.performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',p,'kfolds',kfold);
+                    summary_r(curr_p,curr_kfold) = y{curr_loop}.performance(1);
+                    summary_p(curr_p,curr_kfold) = y{curr_loop}.performance(2);    
+                end
+                curr_loop = curr_loop + 1;
+            end
+        end
+        save([savefolder task_matrice],'y','summary_r','summary_p','-append')
+        delete(lock_file)
+        toc
     end
 end
 %}

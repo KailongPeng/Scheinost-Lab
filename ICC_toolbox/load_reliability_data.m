@@ -88,13 +88,14 @@ for k = 1:length(theseFiles)
     clear temp;
     toc
     %}
-    clear temp;
-    temp = readtable(fullFileName);
-    temp(:,1) = [];
-    temp(:,end) = [];
-    temp = table2array(temp);
-    data{k} = temp;
-    clear temp;
+    clear cr_max;
+    try
+        [cr_max,~] = create_max_correlation_matrix_function(fullFileName);
+        data{k} = cr_max;
+    catch
+        data{k} = nan;
+    end
+    clear cr_max;
     
     if strcmp(study_type,'traveling_subs')
         % file prototype: 01_V3000_2_bis_matrix.nii
@@ -149,7 +150,7 @@ if strcmp(study_type,'test_retest')
             
             l=unique(t(:,2));
             l=sortrows(l);
-            for i=1:length(l);
+            for i=1:length(l)
                 t(t(:,2)==l(i),2)=i;
             end
             

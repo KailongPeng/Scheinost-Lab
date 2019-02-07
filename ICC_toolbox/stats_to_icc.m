@@ -6,7 +6,7 @@ function [icc,var]=stats_to_icc(stats,factor_tbl,DSrange,Dstepsz)
 
 % to do sigmask-ed:
 % 1) load('sigmask','stats'), 2) mask the stats, and 3) use this script
-
+cd('/home/kailong/Scheinost-Lab/ICC_toolbox')
 tempsave=0; % turn on to save ICC if running directly, not within ICC script
 
 if mod(DSrange, Dstepsz) ~= 0 || mod(DSrange, Dstepsz) ~= 0

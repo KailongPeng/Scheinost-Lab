@@ -58,8 +58,19 @@ end
 
 
 %% Estimate Variance
+if ~exist('amt_fin_old')
+    amt_fin_old=0;
+end
 for i = 1:size(roi_data{1},1) % roi1
-    i
+
+    if (mod(round(i*100/size(roi_data{1},1)),5)==0)
+        amt_fin=round(i*100/size(roi_data{1},1));
+        if(~(amt_fin==amt_fin_old))
+            amt_fin_old=amt_fin;
+            fprintf('%0.0f%% finished\n',amt_fin);
+        end
+    end
+    
     for j = 1:size(roi_data{1},2) % roi2
         for k = 1:size(roi_data{1},3)
             
@@ -200,6 +211,7 @@ Dstepsz=0.125;
 
 [icc_summary,var_comp_mean]=stats_to_icc(selected_stats,factor_tbl,Dstudy_range,Dstepsz);
 
+save(['/home/kailong/Scheinost-Lab/Log/' datestr(datetime) '_Log']);
 
 %% Draw simple figure (see roi_compute_corrs for more complex)
 

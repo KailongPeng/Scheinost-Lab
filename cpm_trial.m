@@ -25,7 +25,7 @@ task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL' ...
     'GAMBLING_LR' 'GAMBLING_RL'...
     'LANGUAGE_LR' 'LANGUAGE_RL'...
     'RELATIONAL_LR' 'RELATIONAL_RL'...
-    };
+    }; % 18files
 % task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL'};
 
 id = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat');
@@ -150,15 +150,59 @@ for curr_GSR = 1:size(GSR_list,2)
         task_matrice = ['MxMxN_matrix_' task];
         savefolder = []; 
         savefolder = ['/home/kailong/Desktop/results_matrix_268_110817/' GSR '/'];
-        clear MxMxN_matrix_temp sum_shift index all_index fileList
+        clear MxMxN_matrix_temp sum_shift index all_index fileList y summary_r summary_p
         load([savefolder task_matrice]);
+        
+        lock_file = [savefolder task_matrice '_lock2.mat'];        
+        if exist('y')
+            fprintf([task_matrice ' exist\n'])
+            continue
+        end
+        if exist(lock_file)
+            fprintf('occupied\n');
+            continue
+        else
+            save(lock_file,'lock_file');
+        end
+
+
         eval(['MxMxN_matrix_temp = ' task_matrice ';']);
         MxMxN_matrix_temp = MxMxN_matrix_temp(:,:,~isnan(MxMxN_matrix_temp(1,1,:)));
-        [y_predict, performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.05,'kfolds',2);
-        save([savefolder task_matrice],'y_predict','performance','-append')
+        p_value_list = [0.01 0.005 0.001];
+        kfold_list = [2,10,size(MxMxN_matrix_temp,3)];
+        curr_loop = 1;
+        tic
+        for curr_p = 1:size(p_value_list,2)
+            p = [];
+            p = p_value_list(curr_p);
+            for curr_kfold = 1:size(kfold_list,2)
+                kfold = [];
+                kfold = kfold_list(curr_kfold);
+                y{curr_loop}.p = p;
+                y{curr_loop}.kfold = kfold;
+                try
+                    [y{curr_loop}.y_predict, y{curr_loop}.performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',p,'kfolds',kfold);
+                    summary_r(curr_p,curr_kfold) = y{curr_loop}.performance(1);
+                    summary_p(curr_p,curr_kfold) = y{curr_loop}.performance(2);      
+                end
+                curr_loop = curr_loop + 1;
+            end
+        end
+        save([savefolder task_matrice],'y','summary_r','summary_p','-append')
+        delete(lock_file)
+        toc
     end
 end
 
+%         [y_predict_05_2, performance_05_2] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.05,'kfolds',2);
+%         [y_predict_01_n, performance_01_n] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.01,'kfolds',size(MxMxN_matrix_temp,3));
+%         [y_predict_001_10, performance_001_10] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.001,'kfolds',10);
+%         [y_predict_01_10, performance_01_10] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',0.01,'kfolds',10);
+%         save([savefolder task_matrice],'y_predict_05_2','performance_05_2','-append')
+%         save([savefolder task_matrice],'y_predict_01_n','performance_01_n','-append')
+%         save([savefolder task_matrice],'y_predict_001_10','performance_001_10','-append')
+%         save([savefolder task_matrice],'y_predict_01_10','performance_01_10','-append')
+        
 % notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
 %{
 load (['/home/kailong/Desktop/results_matrix_268_110817/MxMxN_matrix_REST_LR.mat'])
