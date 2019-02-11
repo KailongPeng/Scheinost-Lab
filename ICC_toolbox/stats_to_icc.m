@@ -1,4 +1,4 @@
-function [icc,var]=stats_to_icc(stats,factor_tbl,DSrange,Dstepsz)
+function [icc,var]=stats_to_icc(stats,factor_tbl,DSrange,Dstepsz,filename)
 % computes 1, 2- or 3-factor ICC (detects from nfactors in ftbl) 
 % note: 2- and 3-factor ICC are G-Theory ICC (Webb and Shavelson, 2005)
 % note: ftbl structure doesn't affect G-Theory ICC. Can input factor_tbl=0.
@@ -380,8 +380,8 @@ if nvarcomp<=7
     
     
     
-    savefig(sprintf('tmp_DStudy_%s.fig',timeID));
-    saveimg_squaresubplot({sprintf('tmp_DStudy_%s',timeID)},'no')
+    savefig(sprintf([filename '_tmp_DStudy_%s.fig'],timeID));
+    saveimg_squaresubplot({sprintf([filename '_tmp_DStudy_%s'],timeID)},'no')
     close;
 end
 
@@ -389,7 +389,7 @@ disp(sprintf('G: %0.2f+/-%0.2f',mean(first_iccG{1}),std(first_iccG{1})))
 disp(sprintf('D: %0.2f+/-%0.2f',mean(first_iccD{1}),std(first_iccD{1})))
 
 if(tempsave)
-    save(sprintf('tmp_icc_%s.mat',timeID),'icc','var')
+    save(sprintf([filename 'tmp_icc_%s.mat'],timeID),'icc','var')
 end
 
 

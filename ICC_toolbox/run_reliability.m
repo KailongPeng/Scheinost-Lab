@@ -1,4 +1,4 @@
-function [icc_summary,var,stats,sigmask] = run_reliability(correctiontype,varargin)
+function [icc_summary,var,stats,sigmask] = run_reliability(correctiontype,filename,varargin)
 % does sig masking and computes 1, 2- or 3-factor ICC (detects from nfactors in ftbl) 
 % note: 2- and 3-factor ICC are G-Theory ICC (Webb and Shavelson, 2005)
 % e.g., [icc,var,stats,sigmask]=run_reliability('Bonf',data,ftbl) % if loading data manually
@@ -97,7 +97,7 @@ end
  
 sigmask = create_sigedge_mask(masked_data,0.05,correctiontype); % "none"->all ones
 data_sig = get_masked_data(masked_data,sigmask,correctiontype);
-[icc_summary,var,stats]=calc_roi_iccs(data_sig,ftbl,'all');
+[icc_summary,var,stats]=calc_roi_iccs(data_sig,ftbl,'all',filename);
 
 % if using no sigmask, still return a real sigmask in case it's needed for future analyses
 if strcmp(correctiontype,'none')

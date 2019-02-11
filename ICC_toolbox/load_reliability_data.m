@@ -1,4 +1,4 @@
-function [data,ftbl] = load_reliability_data(thisFolder, thisPattern)
+function [data,ftbl] = load_reliability_data(thisFolder, thisPattern,filename)
 % built to parse metadata from traveling_subs and test_retest
 % supports regex
 % e.g., [data,ftbl] = load_trt_files('/Users/stephanie/Documents/data/mnt/gsr_unism/','.*roi_.\.nii\.gz');
@@ -25,6 +25,15 @@ if isempty(theseFiles)
     errorMessage = sprintf('Error: Nothing found matching\n%s', thisPattern);
     uiwait(warndlg(errorMessage));
     return;
+end
+
+if contains(filename,'original')
+%     thisPattern = '.*matrix_matrix\.txt$';
+%     str = 'generate new correlation matrix? y or n\n';
+    new_correlaltion = 'n';
+
+else
+    new_correlaltion = 'y';
 end
 
 
@@ -88,14 +97,25 @@ for k = 1:length(theseFiles)
     clear temp;
     toc
     %}
-    clear cr_max;
-    try
-        [cr_max,~] = create_max_correlation_matrix_function(fullFileName);
-        data{k} = cr_max;
-    catch
-        data{k} = nan;
+    
+    % generate new correlation matrix
+    if strcmp(new_correlaltion , 'y')
+        clear cr_max;
+        try
+            [cr_max,~] = create_max_correlation_matrix_function(fullFileName);
+            data{k} = cr_max;
+        catch
+            data{k} = nan;
+        end
+        clear cr_max;
+    else
+        %use generated matrix
+        clear matrix_file
+        matrix_file = readtable(fullFileName);
+        matrix_file(:,end) = [];
+        matrix_file = table2array(matrix_file);
+        data{k} = matrix_file;
     end
-    clear cr_max;
     
     if strcmp(study_type,'traveling_subs')
         % file prototype: 01_V3000_2_bis_matrix.nii

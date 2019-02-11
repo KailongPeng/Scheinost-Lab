@@ -1,4 +1,4 @@
-function [icc_summary, var_comp_mean, selected_stats] = calc_roi_iccs(roi_data, factor_tbl, this_group)
+function [icc_summary, var_comp_mean, selected_stats] = calc_roi_iccs(roi_data, factor_tbl, this_group,filename)
 % computes 1, 2- or 3-factor ICC (detects from nfactors in ftbl) 
 % note: 2- and 3-factor ICC are G-Theory ICC (Webb and Shavelson, 2005)
 % [icc_summary,var_comp_mean] = calc_roi_iccs(roi_data, factor_tbl, this_group)
@@ -209,9 +209,9 @@ end
 Dstudy_range=5;
 Dstepsz=0.125;
 
-[icc_summary,var_comp_mean]=stats_to_icc(selected_stats,factor_tbl,Dstudy_range,Dstepsz);
+[icc_summary,var_comp_mean]=stats_to_icc(selected_stats,factor_tbl,Dstudy_range,Dstepsz,filename);
 
-save(['/home/kailong/Scheinost-Lab/Log/' datestr(datetime) '_Log']);
+save(['/home/kailong/Scheinost-Lab/Log/' filename '_' datestr(datetime) '_Log']);
 
 %% Draw simple figure (see roi_compute_corrs for more complex)
 

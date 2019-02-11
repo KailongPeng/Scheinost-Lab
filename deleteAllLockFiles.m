@@ -4,7 +4,7 @@ function [ FList ] = deleteAllLockFiles(DataFolder)
 % this function find the files whose name contain extList and delete them.
 
 
-findtext = '_lock.mat';
+findtext = '_lock';
 if nargin < 1 
     if isdir('/home/kailong/Desktop') == 1 
 %         DataFolder = '/home/kailong/';

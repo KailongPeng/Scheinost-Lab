@@ -13,6 +13,7 @@
 clear all;close all;clc;
 restoredefaultpath;
 addpath(genpath('/home/kailong/Scheinost-Lab/'));
+
 %pathname = '/mnt/store1/mridata2/mri_group/HCP_data/HCP_900_DATA/REST2_LR/matrices/';
 global kailongLog curr_log
 kailongLog = [];
@@ -156,8 +157,11 @@ end
 format long g
 save(['/home/kailong/Scheinost-Lab/Log/' datestr(datetime) '_Log'],'kailongLog');
 % fprintf('%s',num2str(datenum(datetime)))
+
 %%
-%{
+% task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL'};
+% GSR_list = {'GSR' 'NOGSR'};
+
 missingnodes_hcp = load('/home/kailong/Scheinost-Lab/missingNodes.mat');
 missingnodes_hcp = missingnodes_hcp.missingnodes_hcp;
 behavior = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_behav.mat');
@@ -213,7 +217,7 @@ for curr_GSR = 1:size(GSR_list,2)
         toc
     end
 end
-%}
+
 
 % notworking = load('/mnt/newchell/47421/NeurodevelopmentalGenomics/abby/CPMPaper/hcp515_noBadNodes/missingNodes.mat');
 %{
