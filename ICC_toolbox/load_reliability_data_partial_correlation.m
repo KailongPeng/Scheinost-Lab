@@ -1,4 +1,4 @@
-function [data,ftbl] = load_reliability_data_partial_correlation(thisFolder, thisPattern)
+function [data,ftbl] = load_reliability_data_partial_correlation(thisFolder, thisPattern,filename)
 % built to parse metadata from traveling_subs and test_retest
 % supports regex
 % e.g., [data,ftbl] = load_trt_files('/Users/stephanie/Documents/data/mnt/gsr_unism/','.*roi_.\.nii\.gz');
@@ -8,7 +8,8 @@ function [data,ftbl] = load_reliability_data_partial_correlation(thisFolder, thi
 % remember! for trav seeds, use /more_results/pcc/*crop_resampled.nii.gz
 
 flag_studytype=0;
-
+thisFolder = '/home/kailong/Desktop/results_matrix_268_110817/partial_correlation';
+thisPattern = '.*roimean\.mat';
 if ~isfolder(thisFolder)
   errorMessage = sprintf('Error: The following folder does not exist:\n%s', thisFolder);
   uiwait(warndlg(errorMessage));
@@ -28,30 +29,30 @@ if isempty(theseFiles)
 end
 
 %%
-    fullFileName = theseFiles{1};
-    [pathstr,name,ext] = fileparts(fullFileName);
+%     fullFileName = theseFiles{1};
+%     [pathstr,name,ext] = fileparts(fullFileName);
+% 
+%     baseFileName=[name,ext];
 
-    baseFileName=[name,ext];
-
-    % check correct filetype and assign study_type
-    if ~flag_studytype
-        if(~isempty(strfind(baseFileName,'000_')))
-            study_type='traveling_subs';
-        elseif (~isempty(strfind(baseFileName,'TRT')))
-            study_type='test_retest';
-        else
-            study_type='undefined';
-        end
-        if ~(strfind(ext,'.nii')) & ~(strfind(name,'.nii'))
-            errorMessage = sprintf('Error: The file is not .nii or .nii.gz:\n%s', fullFileName);
-            uiwait(warndlg(errorMessage));
-            return;
-        end
-        flag_studytype=1;
-    end
+%     % check correct filetype and assign study_type
+%     if ~flag_studytype
+%         if(~isempty(strfind(baseFileName,'000_')))
+%             study_type='traveling_subs';
+%         elseif (~isempty(strfind(baseFileName,'TRT')))
+%             study_type='test_retest';
+%         else
+%             study_type='undefined';
+%         end
+%         if ~(strfind(ext,'.nii')) & ~(strfind(name,'.nii'))
+%             errorMessage = sprintf('Error: The file is not .nii or .nii.gz:\n%s', fullFileName);
+%             uiwait(warndlg(errorMessage));
+%             return;
+%         end
+%         flag_studytype=1;
+%     end
 %%
-ftbl = nan(length(theseFiles),5);
-parfor k = 1:length(theseFiles)
+% ftbl = nan(length(theseFiles),5);
+for k = 1:length(theseFiles)
 %     baseFileName = theseFiles(k).name;
 %     fullFileName = fullfile(thisFolder, baseFileName);
       fullFileName = theseFiles{k};
@@ -74,22 +75,22 @@ parfor k = 1:length(theseFiles)
 
     baseFileName=[name,ext];
 
-%     % check correct filetype and assign study_type
-%     if ~flag_studytype
-%         if(~isempty(strfind(baseFileName,'000_')))
-%             study_type='traveling_subs';
-%         elseif (~isempty(strfind(baseFileName,'TRT')))
-%             study_type='test_retest';
-%         else
-%             study_type='undefined';
-%         end
-%         if ~(strfind(ext,'.nii')) & ~(strfind(name,'.nii'))
-%             errorMessage = sprintf('Error: The file is not .nii or .nii.gz:\n%s', fullFileName);
-%             uiwait(warndlg(errorMessage));
-%             return;
-%         end
-%         flag_studytype=1;
-%     end
+    % check correct filetype and assign study_type
+    if ~flag_studytype
+        if(~isempty(strfind(baseFileName,'000_')))
+            study_type='traveling_subs';
+        elseif (~isempty(strfind(baseFileName,'TRT')))
+            study_type='test_retest';
+        else
+            study_type='undefined';
+        end
+        if ~(strfind(ext,'.nii')) & ~(strfind(name,'.nii'))
+            errorMessage = sprintf('Error: The file is not .nii or .nii.gz:\n%s', fullFileName);
+            uiwait(warndlg(errorMessage));
+            return;
+        end
+        flag_studytype=1;
+    end
   
 
     % if(strfind(ext,'.txt'))
@@ -111,15 +112,20 @@ parfor k = 1:length(theseFiles)
     clear temp;
     toc
     %}
-    cr_max = [];
+    rho = [];
+    atanh_rho = [];
     try
-        [rho,atanh_rho] = create_partial_correlation_matrix_function(fullFileName);
-%         [cr_max,~] = create_max_correlation_matrix_function(fullFileName);
-        data{k} = atanh_rho;
+        load(fullFileName);
+        rho = rho - diag(diag(rho));
+        atanh_rho = atanh(rho);
+%         data{k} = atanh_rho;
+        data{k} = rho;
+
     catch
         data{k} = nan;
     end
-    cr_max = [];
+    rho = [];
+    atanh_rho = [];
     
     if strcmp(study_type,'traveling_subs')
         % file prototype: 01_V3000_2_bis_matrix.nii

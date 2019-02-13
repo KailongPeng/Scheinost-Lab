@@ -14,4 +14,4 @@ cr_max = corrected_cr_max;
 corrected_cr_max = [];
 cr_max = reshape(cr_max,[268,268]);
 cr_max = cr_max - diag(diag(cr_max));
-cr_max = atanh(cr_max);
+% cr_max = atanh(cr_max);
