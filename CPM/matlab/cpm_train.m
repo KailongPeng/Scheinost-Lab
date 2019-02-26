@@ -15,9 +15,14 @@ pmask=pmask.*(+(p<pthresh));
 
 % For each subject, summarize selected features 
 for i=1:size(x,2)
-    summary_feature(i)=nanmean(x(pmask>0,i))-nanmean(x(pmask<0,i));
+    summary_feature(i)=nansum([nanmean(x(pmask>0,i)),-nanmean(x(pmask<0,i))]);
 end
 
 % Fit y to summary features
-mdl=robustfit(summary_feature,y');    
-    
+% mdl=robustfit(summary_feature,y','ols');  
+if ~sum(~isnan(summary_feature))
+    warning('pthresh too high');
+    mdl=robustfit(summary_feature,y');
+else
+    mdl=robustfit(summary_feature,y');
+end
