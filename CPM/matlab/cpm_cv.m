@@ -1,4 +1,4 @@
-function [y_predict_reshape]=cpm_cv(x,y,pthresh,kfolds)
+function [y_predict_reshape]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag)
 % Runs cross validation for CPM
 % x            Predictor variable
 % y            Outcome variable
@@ -44,7 +44,7 @@ for leftout = 1:kfolds
     y_test = [y_test ; y(testinds)];
     
     % Train Connectome-based Predictive Model
-    [r,p,pmask,mdl] = cpm_train(x_train, y_train,pthresh);
+    [r,p,pmask,mdl] = cpm_train(x_train, y_train,pthresh,corr_type,LinearFlag);
     
     % Test Connectome-based Predictive Model
 %     [y_predict(leftout,1:nsubs_in_fold)]=cpm_test(x_test,mdl,pmask);

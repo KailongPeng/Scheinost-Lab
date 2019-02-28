@@ -329,16 +329,16 @@ for curr_method = 1:length(method_list)
             output_file = [savefolder task_matrice '_atanh_p5'];
 
             lock_file = [output_file '_lock.mat'];        
-            if exist([output_file '.mat'])
-                fprintf([task_matrice ' exist\n'])
-                continue
-            end
-            if exist(lock_file)
-                fprintf('occupied\n');
-                continue;
-            else
-                save(lock_file,'lock_file');
-            end
+%             if exist([output_file '.mat'])
+%                 fprintf([task_matrice ' exist\n'])
+%                 continue
+%             end
+%             if exist(lock_file)
+%                 fprintf('occupied\n');
+%                 continue;
+%             else
+%                 save(lock_file,'lock_file');
+%             end
 
             clear MxMxN_matrix_temp sum_shift index all_index fileList y summary_r summary_p
             load([savefolder task_matrice]);
@@ -374,8 +374,10 @@ for curr_method = 1:length(method_list)
                     kfold = kfold_list(curr_kfold);
                     y{curr_loop}.p = p;
                     y{curr_loop}.kfold = kfold;
+                    corr_type = 'spearman';
+                    LinearFlag = 1;
                     try
-                        [y{curr_loop}.y_predict, y{curr_loop}.performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),'pthresh',p,'kfolds',kfold);
+                        [y{curr_loop}.y_predict, y{curr_loop}.performance] = cpm_main(MxMxN_matrix_temp,behavior(map_ID),corr_type,LinearFlag,'pthresh',p,'kfolds',kfold);
                         summary_r(curr_p,curr_kfold) = y{curr_loop}.performance(1);
                         summary_p(curr_p,curr_kfold) = y{curr_loop}.performance(2);    
                     end

@@ -6,7 +6,18 @@ function [y_predict]=cpm_test(x,mdl,pmask)
 % y_predict    Predicted y values
 
 % For each subject, create summary feature and use model to predict y
-for i=1:size(x,2)
-    summary_feature(i)=nanmean(x(pmask>0,i))-nanmean(x(pmask<0,i));
-    y_predict(i)=mdl(2)*summary_feature(i) + mdl(1); 
-end
+if strcmp(class(mdl),'double')
+    for i=1:size(x,2)
+        summary_feature(i)=nansum([nanmean(x(pmask>0,i)),-nanmean(x(pmask<0,i))]);
+        y_predict(i)=mdl(2)*summary_feature(i) + mdl(1); 
+    end
+else
+    if iscell(mdl)
+        for i=1:size(x,2)
+            summary_feature(i)=nansum([nanmean(x(pmask>0,i)),-nanmean(x(pmask<0,i))]);
+            func = mdl{1};
+            beta = mdl{2};
+            y_predict(i)=func(beta,summary_feature(i)); 
+        end
+    end
+end    
