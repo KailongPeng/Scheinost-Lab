@@ -1,4 +1,4 @@
-function [y_predict, performance] = cpm_main(x,y,varargin)
+function [y_predict, performance] = cpm_main(x,y,corr_type,LinearFlag,varargin)
 % Performs Connectome-Based Predictive Modeling (CPM)
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,10 +50,14 @@ clearvars p
 [x,y]=cpm_check_errors(x,y,kfolds);
 
 %% Train & test Connectome-Based Predictive Model
-[y_predict]=cpm_cv(x,y,pthresh,kfolds);
+[y_predict]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag);
+
+% %look at residues
+% plot(ones(size(y)),y_predict(:)-y(:),'ko','MarkerSize',10)
 
 %% Assess performance
-[performance(1),performance(2)]=corr(y_predict(:),y(:));
+[performance(1),performance(2)]=corr(y_predict(:),y(:),'type','Pearson')
+% [performance(1),performance(2)]=corr(y_predict(:),y(:),'type','spearman')
 
 fprintf('\nDone.\n')
 
