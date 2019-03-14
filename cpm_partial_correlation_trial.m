@@ -28,7 +28,7 @@ curr_log = 1;
 %     'RELATIONAL_LR' 'RELATIONAL_RL'...
 %     }
 task_list = {'REST_LR' 'REST_RL' 'REST2_LR' 'REST2_RL'};
-method_list = {'partial_correlation' 'full_correlation' 'full_no_max' 'icov001' 'icov005' };
+method_list = {'partial_correlation' 'full_correlation' 'full_no_max' 'icov001'};
 id = load('/mnt/store4/mri_group/siyuan_data/HCP515/all_id.mat');
 id = id.all_id;
 id = sort(id);

@@ -50,13 +50,13 @@ clearvars p
 [x,y]=cpm_check_errors(x,y,kfolds);
 
 %% Train & test Connectome-Based Predictive Model
-[y_predict]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag);
+[y_predict,summary_feature]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag);
 
-% %look at residues
-% plot(ones(size(y)),y_predict(:)-y(:),'ko','MarkerSize',10)
-
+%look at residues
+%plot(summary_feature(:),y_predict(:)-y(:),'k.','MarkerSize',10)
+%hist(summary_feature(summary_feature>-4))
 %% Assess performance
-[performance(1),performance(2)]=corr(y_predict(:),y(:),'type','Pearson')
+[performance(1),performance(2)]=corr(y_predict(:),y(:),'type',corr_type);
 % [performance(1),performance(2)]=corr(y_predict(:),y(:),'type','spearman')
 
 fprintf('\nDone.\n')

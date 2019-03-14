@@ -1,4 +1,4 @@
-function [y_predict_reshape]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag)
+function [y_predict_reshape,summary_feature_reshape]=cpm_cv(x,y,pthresh,kfolds,corr_type,LinearFlag)
 % Runs cross validation for CPM
 % x            Predictor variable
 % y            Outcome variable
@@ -17,6 +17,7 @@ ksample=floor(nsubs/kfolds);
 fprintf('\n# Running over %1.0f Folds.\nPerforming fold no. ',kfolds);
 y_test = [];
 y_predict = [];
+summary_feature = [];
 for leftout = 1:kfolds
     fprintf('%1.0f ',leftout);
     
@@ -49,12 +50,16 @@ for leftout = 1:kfolds
     % Test Connectome-based Predictive Model
 %     [y_predict(leftout,1:nsubs_in_fold)]=cpm_test(x_test,mdl,pmask);
     temp = [];
-    [temp]=cpm_test(x_test,mdl,pmask);
+    temp_summary_feature = [];
+    [temp,temp_summary_feature]=cpm_test(x_test,mdl,pmask);
     y_predict = [y_predict temp];
+    summary_feature = [summary_feature temp_summary_feature];
+%     hist(temp_summary_feature);
 end
 
 % y_test_reshape(randinds)=reshape(y_test',[],1);
 % y_predict_reshape(randinds)=reshape(y_predict',[],1);
 y_test_reshape(randinds) = y_test;
 y_predict_reshape(randinds) = y_predict';
+summary_feature_reshape(randinds) = summary_feature';
 

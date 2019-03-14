@@ -1,4 +1,4 @@
-function [y_predict]=cpm_test(x,mdl,pmask)
+function [y_predict,summary_feature]=cpm_test(x,mdl,pmask)
 % Test a Connectome-based Predictive Model using previously trained model
 % x            Predictor variable
 % mdl          Coefficient fits for linear model relating summary features to y
