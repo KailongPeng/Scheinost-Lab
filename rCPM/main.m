@@ -10,7 +10,7 @@
 
 function [results] = main()
 %     data = csvread('../data/gender.csv');
-    dataset = "hcp.515"; % LDA on UCLA + ages on 3 bins for HCP
+    dataset = "math"; % LDA on UCLA + ages on 3 bins for HCP
     if dataset=="ucla.236"
         x = load('../data.236/all_mats_6tasks.mat');
         wais = load('../data.236/wais_raw');
@@ -24,6 +24,17 @@ function [results] = main()
         phenotypes = [phenotype('wais',wais) phenotype('wms',wms)];
         options.phenotypes = phenotypes;
         options.diagnosis = diagnosis;
+    elseif dataset =="math"
+        x = load('/home/kailong/Scheinost-Lab/math/data/all_mats.mat');
+        y = load('/home/kailong/Scheinost-Lab/math/data/all_behav.mat');
+        g = buildGroup(x.all_mats,dataset,zeros(132,1),zeros(132,1),false); % mask=false, Bins
+        options = [];
+        options.thresh=0.1;
+        options.seed = randi([1 10000]);
+        options.k = 2;
+        phenotypes = [phenotype('behav',y.all_behav)];
+        options.phenotypes = phenotypes;
+        options.diagnosis = y;
     elseif dataset=="ucla.175.antiDepression" % 42 subjects
         x = load('../data.175/all_mats_antiD_MS.mat');
         x=x.all_mats_AD_MS;
