@@ -56,7 +56,7 @@ clearvars p
 %plot(summary_feature(:),y_predict(:)-y(:),'k.','MarkerSize',10)
 %hist(summary_feature(summary_feature>-4))
 %% Assess performance
-[performance(1),performance(2)]=corr(y_predict(:),y(:),'type',corr_type);
+[performance(1),performance(2)]=corr(y_predict(:),y(:),'type',corr_type);%[rho,pval] = corr();
 % [performance(1),performance(2)]=corr(y_predict(:),y(:),'type','spearman')
 
 fprintf('\nDone.\n')
