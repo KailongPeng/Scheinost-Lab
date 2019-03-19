@@ -1,4 +1,4 @@
-function [q_s, r_pearson, r_rank, y, mask] = mCPM(all_mats, all_behav, thresh, k, seed)
+function [q_s, r_pearson, r_rank, y, mask] = siyuan_mCPM(all_mats, all_behav, thresh, k, seed)
     %CPM Connectome-based predictive modeling using univariate feature selection 
     %
     %   [r_pearson, r_rank, y, mask] = mCPM(all_mats, all_behav, 0.1)

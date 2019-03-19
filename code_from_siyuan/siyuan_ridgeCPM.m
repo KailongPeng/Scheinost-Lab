@@ -1,4 +1,5 @@
-function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_total] = ridgeCPM(all_mats, all_behav, thresh, v_alpha, lambda, k, seed)
+function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_total] = ...
+    siyuan_ridgeCPM(all_mats, all_behav, thresh, v_alpha, lambda, k, seed)
     %ridgeCPM Connectome-based predictive modeling using univariate
     %feature selection and ridge regression
     %
@@ -102,9 +103,9 @@ function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_t
     y = zeros(num_sub_total, 1);
     rng(seed);
     indices = crossvalind('Kfold', num_sub_total, k);
-    
+    tmark = tic;
     for i_fold = 1 : k
-        tic
+        
         fprintf('%dth fold\n', i_fold);
         
         test_idx = (indices==i_fold);
@@ -148,6 +149,6 @@ function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_t
     [r_rank, ~] = corr(y, all_behav, 'type', 'spearman');
     mse = sum((y - all_behav).^2) / num_sub_total;
     q_s = 1 - mse / var(all_behav, 1);
-    toc
+    time = toc(tmark)
 end
 
