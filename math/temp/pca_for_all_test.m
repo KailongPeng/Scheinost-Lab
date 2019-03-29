@@ -19,8 +19,10 @@ remainTest_Variable_class = Variable_class(remainTestID);
 [cr,~] = xcorr(remainTest_norm_no_nan_sum_matrix,0,'coeff');
 cr = reshape(cr,[sqrt(length(cr)),sqrt(length(cr))]);
 cr = cr - diag(diag(cr));
+figure;imagesc(cr)
 
-[noHighCor_table,noHighCor_table_VariableNames] = excludeTooHighCorr(cr,remainTest_Variable_class,remainTest_VariableNames,remainTest_norm_no_nan_sum_matrix,remainTest_no_norm_no_nan_sum_all_test);
+[noHighCor_table,noHighCor_table_VariableNames,noHighCor_norm_table] = excludeTooHighCorr(cr,remainTest_Variable_class,remainTest_VariableNames,remainTest_norm_no_nan_sum_matrix,remainTest_no_norm_no_nan_sum_all_test);
+writetable(noHighCor_norm_table,'/home/kailong/Scheinost-Lab/math/data/noHighCor_norm_SelectedTest_test_no_norm_no_nan_header','Delimiter',',')
 writetable(noHighCor_table,'/home/kailong/Scheinost-Lab/math/data/noHighCor_SelectedTest_test_no_norm_no_nan_header','Delimiter',',')
 writetable(noHighCor_table_VariableNames,'/home/kailong/Scheinost-Lab/math/data/SelectedTest_VariableNames','Delimiter',',')
 
