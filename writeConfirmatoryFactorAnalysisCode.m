@@ -5,7 +5,8 @@ clear all;
 % path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
 %     'noHighCor_all_data- '];
 % data = 'math';
-DataName = 'noHighCor_SelectedTest';
+% DataName = 'noHighCor_SelectedTest';
+DataName = 'noHighCor_norm_SelectedTest';
 path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
     DataName '- '];
 numOfFactorList = [1:7];
