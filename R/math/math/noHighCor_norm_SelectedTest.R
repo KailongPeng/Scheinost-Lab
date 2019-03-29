@@ -149,7 +149,9 @@ fits$m7 <- lavaan::cfa(models$m7, data = noHighCor_norm_SelectedTest)
   v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
                      "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
   round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
-  a <- coef(fits$m3)
+  
+  #generate coefficiant and estimate Factor scores
+  b <- coef(fits$m3)
   
   str_eval=function(x) {return(eval(parse(text=x)))}
   sequence <- seq(7)
