@@ -1,0 +1,301 @@
+library(lavaan)
+math <- read.table("output/math.csv", header=TRUE, sep=",")
+noHighCor_math <- read.table("output/noHighCor_math.csv", header=TRUE, sep=",")
+all_data <- read.table("output/all_data.csv", header=TRUE, sep=",")
+noHighCor_all_data <- read.table("output/noHighCor_all_data.csv", header=TRUE, sep=",")
+
+v <- list()
+v$math_items <- read.table("raw_data/math_VariableNames.txt", header=TRUE, sep=",")
+v$all_data_items <- read.table("raw_data/VariableNames.txt", header=TRUE, sep=",")
+v$noHighCor_all_data <- read.table("raw_data/noHighCor_VariableNames.txt", header=TRUE, sep=",")
+
+# sample size
+nrow(math)
+nrow(all_data)
+# check for missing data
+sapply(math, function(X) sum(is.na(X)))
+sapply(noHighCor_math, function(X) sum(is.na(X)))
+sapply(all_data, function(X) sum(is.na(X)))
+sapply(noHighCor_all_data, function(X) sum(is.na(X)))
+# Exploratory factor analysis
+
+# check for number of factors
+psych::scree(math)
+psych::fa.parallel(math)
+
+psych::scree(noHighCor_math)
+psych::fa.parallel(noHighCor_math)
+
+psych::scree(all_data)
+psych::fa.parallel(all_data)
+
+psych::scree(noHighCor_all_data)
+psych::fa.parallel(noHighCor_all_data)
+
+# examine 5 factor EFA for math
+sequence <- seq(20)
+for (i in sequence)
+{
+fac1 <- factanal(math, i, rotation = "promax")
+}
+fac1 <- factanal(math, 1, rotation = "promax")
+print(fac1, cutoff = .30)
+fl <- round(unclass(fac1$loadings), 2)
+fl
+
+write.csv(fl, "output/math-2factor-efa-factor-loadings.csv")
+
+```{r} 
+#not working due to missing data
+
+# examine 5 factor EFA for all_data
+sequence <- seq(20)
+for (i in sequence)
+{
+  fac1 <- factanal(all_data, i, rotation = "promax")
+}
+fac1 <- factanal(all_data, 1, rotation = "promax")
+print(fac1, cutoff = .30)
+fl <- round(unclass(fac1$loadings), 2)
+fl
+write.csv(fl, "output/all_data-2factor-efa-factor-loadings.csv")
+```
+```{r} 
+# examine factor EFA for all_data
+sequence <- seq(20)
+for (i in sequence)
+{
+  i
+  fac1 <- factanal(noHighCor_all_data, i, rotation = "promax")
+  print(fac1, cutoff = .30)
+  fl <- round(unclass(fac1$loadings), 2)
+  fl
+}
+write.csv(fl, "output/noHighCor_all_data-2factor-efa-factor-loadings.csv")
+#  fac1 <- factanal(noHighCor_all_data, 1, rotation = "promax")
+```
+
+
+
+# Confirmatory factor analysis for math data
+```{r}
+models <- list()
+fits <- list()
+
+# paste(v[["math_items"]][["char_VariableNames"]], collapse = " + ")
+
+# one factor model
+models$m1 <- 
+    'global  =~ CMAT_Addition_Raw + CMAT_Addition_StS + CMAT_Subtraction_Raw + CMAT_Subtraction_StS + CMAT_Multiplication_Raw + CMAT_Multiplication_StS + CMAT_Division_Raw + CMAT_Division_StS + CMAT_BasicCalc_Comp_Quotient + KeyMath_Numeration_Raw + KeyMath_Numeration_ScS + KeyMath_Measurement_Raw + KeyMath_Measurement_ScS + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS + TOMA0x2D2_Attitudes_Raw + TOMA0x2D2_Attitudes_StS'
+
+# two factor model
+models$m2 <- 
+    ' factor1 =~ CMAT_Addition_Raw + CMAT_Addition_StS + CMAT_Subtraction_Raw + CMAT_Subtraction_StS + CMAT_Multiplication_Raw + CMAT_Multiplication_StS + CMAT_Division_Raw + CMAT_Division_StS + CMAT_BasicCalc_Comp_Quotient + KeyMath_Numeration_Raw + KeyMath_Numeration_ScS + KeyMath_Measurement_Raw + KeyMath_Measurement_ScS + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS
+
+    factor2 =~ TOMA0x2D2_Attitudes_Raw + TOMA0x2D2_Attitudes_StS'
+
+# three factor model
+models$m3 <- 
+    ' factor1 =~ CMAT_Addition_Raw + CMAT_Addition_StS + CMAT_Subtraction_Raw + CMAT_Subtraction_StS + CMAT_Multiplication_Raw + CMAT_Multiplication_StS + CMAT_Division_Raw + CMAT_Division_StS + CMAT_BasicCalc_Comp_Quotient 
+
+    factor2 =~ KeyMath_Numeration_Raw + KeyMath_Numeration_ScS + KeyMath_Measurement_Raw + KeyMath_Measurement_ScS + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS
+
+    factor3 =~ TOMA0x2D2_Attitudes_Raw + TOMA0x2D2_Attitudes_StS'
+
+# four factor model
+models$m4 <- 
+    ' factor1 =~ CMAT_Addition_Raw + CMAT_Addition_StS + CMAT_Subtraction_Raw + CMAT_Subtraction_StS 
+      
+  factor2 =~ CMAT_Multiplication_Raw + CMAT_Multiplication_StS + CMAT_Division_Raw + CMAT_Division_StS + CMAT_BasicCalc_Comp_Quotient 
+
+    factor3 =~ KeyMath_Numeration_Raw + KeyMath_Numeration_ScS + KeyMath_Measurement_Raw + KeyMath_Measurement_ScS + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS
+
+    factor4 =~ TOMA0x2D2_Attitudes_Raw + TOMA0x2D2_Attitudes_StS'
+
+
+fits$m1 <- lavaan::cfa(models$m1, data = math)
+fits$m2 <- lavaan::cfa(models$m2, data = math)
+fits$m3 <- lavaan::cfa(models$m3, data = math)
+fits$m4 <- lavaan::cfa(models$m3, data = math)
+
+summary(fits$m1, fit.measures = TRUE) 
+standardizedSolution(fits$m1)
+v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
+                 "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
+round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
+
+
+summary(fits$m2, fit.measures = TRUE) 
+standardizedSolution(fits$m2)
+v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
+                 "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
+round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
+
+
+summary(fits$m3, fit.measures = TRUE) 
+standardizedSolution(fits$m3)
+v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
+                 "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
+round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
+```
+# Confirmatory factor analysis for noHighCor_all_data
+```{r}
+models <- list()
+fits <- list()
+
+# 1 factor model 
+models$m1 <- 
+    'factor1 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + CTOPP_BW_Raw + struggle_reading + reading_disability_tested + tutoring_reading + struggle_math + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_Vocab_T0x2DScore + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_MathFluency_StS + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS'
+
+
+
+# 2 factor model 
+models$m2 <- 
+    'factor1 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + CTOPP_BW_Raw + struggle_reading + tutoring_reading + struggle_math + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_Vocab_T0x2DScore + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_MathFluency_StS + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS
+
+    factor2 =~ CTOPP_RD_StS + struggle_reading + TOWRE_SW_StS + TOWRE_PD_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_StS'
+
+
+
+# 3 factor model 
+models$m3 <- 
+    'factor1 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + CTOPP_RD_StS + struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + individual_education_plan0x2F504_plan + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_T0x2DScore + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_StS
+
+    factor2 =~ AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + struggle_math + regular_classroom + father_behavioral_problems + family_history_behavioral_problems + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOMA0x2D2_Attitudes_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS
+
+    factor3 =~ CTOPP_RD_StS + CTOPP_RL_StS + TOWRE_SW_Raw + WJ0x2DIII_MathFluency_Raw'
+
+
+
+# 4 factor model 
+models$m4 <- 
+    'factor1 =~ AWMA0x2DS_VisuoSpatialSTM_StS + CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + struggle_math + regular_classroom + father_behavioral_problems + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOMA0x2D2_Attitudes_Raw + TOWRE_SW_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_SpatialRelations_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + CTOPP_RD_StS + struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + individual_education_plan0x2F504_plan + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_T0x2DScore + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_StS
+
+    factor3 =~ struggle_math + tutoring_math + father_behavioral_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_learning_problems + family_history_ADD + family_history_behavioral_problems + KeyMath_ProblemSolving_ScS + TOMA0x2D2_Attitudes_Raw
+
+    factor4 =~ CTOPP_RD_StS + CTOPP_RL_StS + TOWRE_SW_Raw + WJ0x2DIII_MathFluency_Raw'
+
+
+
+# 5 factor model 
+models$m5 <- 
+    'factor1 =~ AWMA0x2DS_VisuoSpatialSTM_StS + CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + struggle_math + father_behavioral_problems + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOMA0x2D2_Attitudes_Raw + TOWRE_SW_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_SpatialRelations_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + struggle_reading + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_T0x2DScore + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS
+
+    factor3 =~ AWMA0x2DS_VisuoSpatialWM_StS + mother_behavioral_problems + father_behavioral_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_learning_problems + family_history_behavioral_problems + family_history_neurological_problems + KeyMath_ProblemSolving_ScS + TOMA0x2D2_Attitudes_Raw
+
+    factor4 =~ struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan
+
+    factor5 =~ CTOPP_RD_StS + CTOPP_RL_StS + TOWRE_SW_Raw + TOWRE_PD_Raw + WJ0x2DIII_MathFluency_Raw'
+
+
+
+# 6 factor model 
+models$m6 <- 
+    'factor1 =~ CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + struggle_math + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOWRE_SW_Raw + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_Vocab_T0x2DScore + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_SpatialRelations_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + speech_delay + struggle_reading + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS
+
+    factor3 =~ AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + struggle_math + tutoring_math + mother_behavioral_problems + father_behavioral_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_behavioral_problems + KeyMath_ProblemSolving_ScS + TOMA0x2D2_Attitudes_Raw + WJ0x2DIII_MathFluency_StS + WJ0x2DIII_SpatialRelations_StS
+
+    factor4 =~ struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan
+
+    factor5 =~ CTOPP_RD_StS + CTOPP_RL_StS
+
+    factor6 =~ WASI_Vocab_Raw + WASI_Vocab_T0x2DScore'
+
+
+
+# 7 factor model 
+models$m7 <- 
+    'factor1 =~ CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOWRE_SW_Raw + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + speech_delay + struggle_reading + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_T0x2DScore + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_StS
+
+    factor3 =~ speech_delay + father_behavioral_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_learning_problems + family_history_ADD + family_history_behavioral_problems + KeyMath_ProblemSolving_ScS + TOMA0x2D2_Attitudes_Raw + WJ0x2DIII_MathFluency_StS
+
+    factor4 =~ struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan
+
+    factor5 =~ AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + learning_preference_teacher + learning_preference_discussions + WASI_BD_Raw + WASI_MR_Raw + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS
+
+    factor6 =~ CTOPP_RD_StS + CTOPP_RL_StS
+
+    factor7 =~ WASI_Vocab_Raw + WASI_Vocab_T0x2DScore'
+
+
+
+# 8 factor model 
+models$m8 <- 
+    'factor1 =~ CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOWRE_SW_Raw + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CTOPP_EL_Raw + CTOPP_BW_Raw + speech_delay + struggle_reading + KeyMath_ProblemSolving_ScS + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WASI_Vocab_T0x2DScore + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS
+
+    factor3 =~ AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + tutoring_math + regular_classroom + learning_preference_teacher + learning_preference_discussions + KeyMath_ProblemSolving_ScS + WASI_BD_Raw + WASI_MR_Raw + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS
+
+    factor4 =~ speech_delay + mother_behavioral_problems + father_speech_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_learning_problems + family_history_ADD + family_history_behavioral_problems + family_history_neurological_problems
+
+    factor5 =~ struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan
+
+    factor6 =~ CTOPP_RD_StS + CTOPP_RL_StS
+
+    factor7 =~ WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_MathFluency_StS
+
+    factor8 =~ WASI_Vocab_Raw + WASI_Vocab_T0x2DScore'
+
+
+
+# 9 factor model 
+models$m9 <- 
+    'factor1 =~ CMAT_Addition_Raw + CMAT_Subtraction_Raw + CMAT_Multiplication_Raw + CTOPP_EL_Raw + KeyMath_Numeration_Raw + KeyMath_ProblemSolving_Raw + TOWRE_SW_Raw + TOWRE_PD_Raw + WASI_Vocab_Raw + WASI_BD_Raw + WASI_Sim_Raw + WASI_MR_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_PassComp_Raw + WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_SpatialRelations_Raw
+
+    factor2 =~ AWMA0x2DS_VerbalSTM_StS + TOWRE_PD_Raw + WJ0x2DIII_WA_Raw + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_Raw
+
+    factor3 =~ struggle_reading + reading_disability_tested + tutoring_reading + math_disability_tested + tutoring_math + individual_education_plan0x2F504_plan
+
+    factor4 =~ speech_delay + TOWRE_SW_Raw + TOWRE_SW_StS + TOWRE_PD_Raw + WJ0x2DIII_WordID_Raw + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS
+
+    factor5 =~ speech_delay + father_speech_problems + father_medical_problems + father_emotional_problems + father_drug_alcohol_abuse + family_history_learning_problems + family_history_ADD + family_history_behavioral_problems + KeyMath_ProblemSolving_ScS
+
+    factor6 =~ CTOPP_RD_StS + CTOPP_RL_StS
+
+    factor7 =~ KeyMath_ProblemSolving_ScS + WASI_Vocab_Raw + WASI_Vocab_T0x2DScore
+
+    factor8 =~ AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + learning_preference_discussions + WASI_BD_Raw + WASI_MR_Raw + WJ0x2DIII_SpatialRelations_Raw + WJ0x2DIII_SpatialRelations_StS
+
+    factor9 =~ WJ0x2DIII_MathFluency_Raw + WJ0x2DIII_MathFluency_StS'
+
+
+
+
+
+#lavaan WARNING: some observed variances are (at least) a factor 1000 times larger than others; use varTable(fit) to investiga
+fits$m1 <- lavaan::cfa(models$m1, data = noHighCor_all_data)
+fits$m2 <- lavaan::cfa(models$m2, data = noHighCor_all_data)
+fits$m3 <- lavaan::cfa(models$m3, data = noHighCor_all_data)
+fits$m4 <- lavaan::cfa(models$m4, data = noHighCor_all_data)
+fits$m5 <- lavaan::cfa(models$m5, data = noHighCor_all_data)
+
+#lavaan WARNING: some observed variances are (at least) a factor 1000 times larger than others; use varTable(fit) to investiga
+#telavaan WARNING:
+#    Could not compute standard errors! The information matrix could
+#    not be inverted. This may be a symptom that the model is not
+#    identified.lavaan WARNING: some estimated ov variances are negativelavaan WARNING: not all elements of the #gradient are (near) zero;
+#                  the optimizer may not have found a local solution;
+#                  use lavInspect(fit, "optim.gradient") to investigate
+fits$m6 <- lavaan::cfa(models$m6, data = noHighCor_all_data)
+fits$m7 <- lavaan::cfa(models$m7, data = noHighCor_all_data)
+fits$m8 <- lavaan::cfa(models$m8, data = noHighCor_all_data)
+fits$m9 <- lavaan::cfa(models$m9, data = noHighCor_all_data)
+
+
+summary(fits$m3, fit.measures = TRUE) 
+standardizedSolution(fits$m3)
+
+v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
+                 "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
+
+round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
+```
