@@ -5,7 +5,7 @@ classdef cbase < handle
         phenotype; % phenotypes
         thresh; % p-value threshold used for univariate
         %                                   feature selection
-        v_alpha; % value of the alpha parameter in elastic
+        alpha; % value of the alpha parameter in elastic
         %                                   net, default is 1e-6 which makes the
         %                                   regression method to be ridge
         %                                   regression, v_alpha=1 makes it lasso.
@@ -32,7 +32,7 @@ classdef cbase < handle
     methods
         function this = cbase(group,phenotype,options)
             this.k = 2;% default folds
-            this.v_alpha = 1e-6;
+            this.alpha = 1e-6;
             this.seed = 665;
             this.thresh=0.05;
             
@@ -55,7 +55,7 @@ classdef cbase < handle
             end
             
             if isfield(options,'v_alpha')
-                this.v_alpha = options.v_valpha;
+                this.alpha = options.alpha;
             end
             
             if isfield(options,'lambda')

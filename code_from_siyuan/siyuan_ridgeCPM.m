@@ -1,4 +1,4 @@
-function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_total] = ...
+function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_total,p_pearson,p_rank] = ...
     siyuan_ridgeCPM(all_mats, all_behav, thresh, v_alpha, lambda, k, seed)
     %ridgeCPM Connectome-based predictive modeling using univariate
     %feature selection and ridge regression
@@ -145,8 +145,8 @@ function [q_s, q_s_fold, r_pearson, r_rank, y, coef_total, coef0_total, lambda_t
     end
     
     % compare predicted and observed behaviors
-    [r_pearson, ~] = corr(y, all_behav);
-    [r_rank, ~] = corr(y, all_behav, 'type', 'spearman');
+    [r_pearson, p_pearson] = corr(y, all_behav);
+    [r_rank, p_rank] = corr(y, all_behav, 'type', 'spearman');
     mse = sum((y - all_behav).^2) / num_sub_total;
     q_s = 1 - mse / var(all_behav, 1);
     time = toc(tmark)

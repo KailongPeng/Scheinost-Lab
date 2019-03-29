@@ -26,15 +26,16 @@ function [results] = main()
         options.diagnosis = diagnosis;
     elseif dataset =="math"
         x = load('/home/kailong/Scheinost-Lab/math/data/all_mats.mat');
-        y = load('/home/kailong/Scheinost-Lab/math/data/all_behav.mat');
+        y = load('/home/kailong/Scheinost-Lab/math/data/all_behav.mat'); 
+        y=y.all_behav;
         g = buildGroup(x.all_mats,dataset,zeros(132,1),zeros(132,1),false); % mask=false, Bins
         options = [];
         options.thresh=0.1;
         options.seed = randi([1 10000]);
         options.k = 2;
-        phenotypes = [phenotype('behav',y.all_behav)];
+        phenotypes = [phenotype('behav',y)];
         options.phenotypes = phenotypes;
-        options.diagnosis = y;
+        options.diagnosis = zeros(length(y));
     elseif dataset=="ucla.175.antiDepression" % 42 subjects
         x = load('../data.175/all_mats_antiD_MS.mat');
         x=x.all_mats_AD_MS;
@@ -42,9 +43,11 @@ function [results] = main()
         y =y.REMIT_HAMD;        
         g = buildGroup(x,dataset,zeros(42,1),zeros(42,1),false); % mask=false, Bins
         options = [];
+        options.v_alpha=0; % alpha=0 for ridge , alpha=1 for lasso
         options.thresh=0.05;
         options.seed = randi([1 10000]);
         options.k = 2;
+        
         phenotypes = [phenotype('HAMD',y)];
         options.phenotypes = phenotypes;
         options.diagnosis = y;
@@ -96,9 +99,11 @@ function [results] = main()
         options.phenotypes = phenotypes;
         options.diagnosis = gender;
     end
-    m = manova(g,options);
+    m = cpm(g,phenotypes,options);
+    m.run();
+%     m = manova(g,options);
     %       m = cca(g,options);
-    results = m.HottelingT();
+%     results = m.HottelingT();
 %     results = m.run();
     %      results = g.pheno_cca(options);
 end
