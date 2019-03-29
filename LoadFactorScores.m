@@ -16,9 +16,9 @@ for curr_numOfFactor = 1:length(numOfFactorList)
     text = [path num2str(numOfFactor) 'FactorScores.csv'];
     % [data, result] = readtext(text);
     % temp = char(data);
-    
+    data = [];
     data = readtable(text);
     data = data(:,2:end);
     data = table2array(data);
-    save([path num2str(numOfFactor) 'LatentFactorEstimate'],mapID,data)
+    save([path num2str(numOfFactor) 'LatentFactorEstimate'],'data')
 end
