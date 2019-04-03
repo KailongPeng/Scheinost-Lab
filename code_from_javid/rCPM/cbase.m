@@ -98,5 +98,44 @@ classdef cbase < handle
             train_behav = train_pca;%(:,1) Select only the first component score, which expains the greatest amt of variance.
             test_behav = test_pca;%(:,1);
         end
+        function [train_behav,test_behav] = kfolds_FA(this,train,test,i_fold)
+            %Define Mu, PCA coeff for the train set
+            %X,Lambda,Psi,T,m,F
+            this.output(i_fold).numOfFactor = 3;
+            [Lambda,Psi,T,stats,F] = factoran(train.y,this.output(i_fold).numOfFactor,'scores','regression');
+            %check whether model is right
+            estimateFSBasedOnModel(train.y,Lambda,Psi,T,this.output(i_fold).numOfFactor,F);
+            this.output(i_fold).Lambda = Lambda;
+            this.output(i_fold).Psi = Psi;
+            this.output(i_fold).T = T;
+            this.output(i_fold).stats = stats;
+            this.output(i_fold).F = F;
+            train_FA = this.output(i_fold).F;
+            %Apply Lambda,Psi,T,m,F on the test set (to compute "actual" FA score)
+            test_FA = estimateFSBasedOnModel(test.y,this.output(i_fold).Lambda,this.output(i_fold).Psi,this.output(i_fold).T,this.output(i_fold).numOfFactor);
+            %Save these back into the original all_behav indicies in case we want to compute FA stability across i_folds
+            this.output(i_fold).allscores = zeros(size(this.phenotype.all_behav));
+            this.output(i_fold).allscores(train.indx,:) = train_FA;
+            this.output(i_fold).allscores(test.indx,:) = test_FA;
+            train_behav = train_FA;
+            test_behav = test_FA;
+%             %Define Mu, PCA coeff for the train set
+%             [coeff,score,latent,tsquared,explained,mu] = pca(train.y);
+%             this.output(i_fold).coeff = coeff;
+%             this.output(i_fold).score=score;
+%             this.output(i_fold).latent=latent;
+%             this.output(i_fold).tsquared=tsquared;
+%             this.output(i_fold).explained=explained;
+%             this.output(i_fold).mu = mu;
+%             train_pca = this.output(i_fold).score;
+%             %Apply Mu, PCA coeff on the test set (to compute "actual" PCA score)
+%             test_pca = (test.y-this.output(i_fold).mu)*this.output(i_fold).coeff;
+%             %Save these back into the original all_behav indicies in case we want to compute PCA stability across i_folds
+%             this.output(i_fold).allscores = zeros(size(this.phenotype.all_behav));
+%             this.output(i_fold).allscores(train.indx,:) = train_pca;
+%             this.output(i_fold).allscores(test.indx,:) = test_pca;
+%             train_behav = train_pca;%(:,1) Select only the first component score, which expains the greatest amt of variance.
+%             test_behav = test_pca;%(:,1);
+        end
     end
 end

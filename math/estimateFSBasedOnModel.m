@@ -9,7 +9,7 @@ sqrtPsi = sqrt(Psi);
 invsqrtPsi = diag(1 ./ sqrtPsi);
 X0 = (X - repmat(mean(X),n,1)) ./ repmat(stdev,n,1);
 Fa = [X0*invsqrtPsi zeros(n,m)] / [Lambda'*invsqrtPsi T'];
-if exist('F')
+if exist('F','var')
     if ~isempty(F)
         if sum(sum(Fa - F)) ~= 0
             error('calculate F wrong!\n');
