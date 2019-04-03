@@ -1,11 +1,6 @@
 cd('/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output');
 clear all;
-%noHighCor_SelectedTest- 4 factor-efa-factor-loadings.csv
-% text = '/Users/pengkailong/Downloads/Untitled.txt';
-% path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
-%     'noHighCor_all_data- '];
-% data = 'math';
-DataName = 'noHighCor_SelectedTest_';%noHighCor_SelectedTest_1FactorScores
+DataName = 'noHighCor_norm_SelectedTest_';%noHighCor_norm_SelectedTest_1FactorScores
 path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
     DataName];
 numOfFactorList = [1:7];

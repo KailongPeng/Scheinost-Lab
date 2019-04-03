@@ -1,23 +1,18 @@
 cd('/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output');
-clear all;
-%noHighCor_SelectedTest- 4 factor-efa-factor-loadings.csv
-% text = '/Users/pengkailong/Downloads/Untitled.txt';
-% path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
-%     'noHighCor_all_data- '];
-% data = 'math';
+clear all;close all;
+
 % DataName = 'noHighCor_SelectedTest';
 DataName = 'noHighCor_norm_SelectedTest';
 path = ['/Users/pengkailong/Desktop/Yale/courses/rotation/Dustin Scheinost/Scheinost-Lab/R/math/math/output/' ...
     DataName '- '];
 numOfFactorList = [1:7];
-
+% LoadingThreshold = 0.3;
+LoadingThreshold = 0.5;
+% LoadingThreshold = -10^9;
 summary = [];
 for curr_numOfFactor = 1:length(numOfFactorList)
     numOfFactor = numOfFactorList(curr_numOfFactor);
     text = [path num2str(numOfFactor) ' factor-efa-factor-loadings.csv'];
-    % [data, result] = readtext(text);
-    % temp = char(data);
-    
     data = readtable(text);
     VariableNames = data(:,1);
     VariableNames = table2cell(VariableNames);
@@ -28,13 +23,11 @@ for curr_numOfFactor = 1:length(numOfFactorList)
     VariableNames = char(temp);
     VariableNames
     matrix = table2array(data(:,2:end));
-    factor_component = matrix>0.3;
-    
-    %for factor i
+    factor_component = matrix>LoadingThreshold;
+    figure;imagesc(factor_component);
     
     all_str = [];
     for curr_factor = 1:size(factor_component,2)
-        curr_factor
         str = ['factor' num2str(curr_factor) ' =~ '];
         for ii = 1:sum(factor_component(:,curr_factor))
             list = find(factor_component(:,curr_factor)==1);
@@ -62,10 +55,10 @@ for curr_numOfFactor = 1:length(numOfFactorList)
     numOfFactor = numOfFactorList(curr_numOfFactor);
     fprintf(fileID,['fits$m' num2str(numOfFactor) ' <- lavaan::cfa(models$m' num2str(numOfFactor) ', data = ' DataName ')\n'])
 end
-for curr_numOfFactor = 1:length(numOfFactorList)
-    numOfFactor = numOfFactorList(curr_numOfFactor);
-    fprintf(fileID,['fits$m' num2str(numOfFactor) ' <- lavaan::cfa(models$m' num2str(numOfFactor) ', data = ' DataName ')\n'])
-end
+% for curr_numOfFactor = 1:length(numOfFactorList)
+%     numOfFactor = numOfFactorList(curr_numOfFactor);
+%     fprintf(fileID,['fits$m' num2str(numOfFactor) ' <- lavaan::cfa(models$m' num2str(numOfFactor) ', data = ' DataName ')\n'])
+% end
 fclose(fileID);
 % table2array(data)
 % temp = table2cell(data);

@@ -29,6 +29,7 @@ for (i in sequence)
   # Confirmatory factor analysis for math data
   models <- list()
   fits <- list()
+  v <- list()
   {
     # 1 factor model 
     models$m1 <- 
@@ -130,6 +131,7 @@ fits$m6 <- lavaan::cfa(models$m6, data = noHighCor_norm_SelectedTest)
 fits$m7 <- lavaan::cfa(models$m7, data = noHighCor_norm_SelectedTest)
 
   }
+  
   summary(fits$m1, fit.measures = TRUE) 
   standardizedSolution(fits$m1)
   v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
@@ -149,7 +151,9 @@ fits$m7 <- lavaan::cfa(models$m7, data = noHighCor_norm_SelectedTest)
   v$fitindicies <- c("npar",  "chisq", "df", "pvalue", "cfi", "rmsea", 
                      "rmsea.ci.lower", "rmsea.ci.upper", "srmr")
   round(sapply(fits, function(X) fitmeasures(X)[v$fitindicies]), 3)
-  a <- coef(fits$m3)
+  
+  #generate coefficiant and estimate Factor scores
+  b <- coef(fits$m3)
   
   str_eval=function(x) {return(eval(parse(text=x)))}
   sequence <- seq(7)
