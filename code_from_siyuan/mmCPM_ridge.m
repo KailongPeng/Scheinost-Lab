@@ -87,7 +87,7 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     all_behav_weight = zeros(k, num_behav);
     lambda_total = zeros(1, k); % store all the lambda
     for i_fold = 1 : k
-        tic;
+        tStart = tic;
         fprintf('%dth fold\n', i_fold);
         
         test_idx = (indices==i_fold);
@@ -158,7 +158,7 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
         
         all_behav_weight(i_fold, :) = behav_weight;
         
-        toc;
+        tElapsed = toc(tStart)
     end
     
 end
