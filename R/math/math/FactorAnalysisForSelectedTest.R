@@ -29,6 +29,7 @@ for (i in sequence)
   # Confirmatory factor analysis for math data
   models <- list()
   fits <- list()
+  v <- list()
   {# 1 factor model 
     models$m1 <- 
       '    factor1 =~ AWMA0x2DS_VerbalSTM_StS + AWMA0x2DS_VerbalWM_StS + AWMA0x2DS_VisuoSpatialSTM_StS + AWMA0x2DS_VisuoSpatialWM_StS + CMAT_BasicCalc_Comp_Quotient + CTOPP_EL_StS + CTOPP_BW_StS + KeyMath_Numeration_ScS + KeyMath_ProblemSolving_ScS + TOWRE_Total_StS + WASI_Vocab_T0x2DScore + WASI_BD_T0x2DScore + WASI_Sim_T0x2DScore + WASI_MR_T0x2DScore + WJ0x2DIII_WordID_StS + WJ0x2DIII_WA_StS + WJ0x2DIII_PassComp_StS + WJ0x2DIII_MathFluency_StS + WJ0x2DIII_SpatialRelations_StS'
