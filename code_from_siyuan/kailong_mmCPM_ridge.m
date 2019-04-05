@@ -1,5 +1,5 @@
 function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total,FA_Lambda] = ...
-    kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, numOfFactor,numOfPC,seed)
+    kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, numOfFactor, numOfPC, seed)
     %CPM Connectome-based predictive modeling using univariate feature selection 
     %
     %   [q_s, r_pearson, r_rank, y, mask] = mCPM(all_mats, all_behav, 0.1)
@@ -58,15 +58,22 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     PCAFlag = 0;
     if exist('numOfFactor','var')
         if ~isempty(numOfFactor)
-            num_behav = numOfFactor;
+%             num_behav = numOfFactor;
             FactorAnalysisFlag = 1;
         end
     else
         if exist('numOfPC','var')
             if ~isempty(numOfPC)
-                num_behav = numOfPC;
+%                 num_behav = numOfPC;
                 PCAFlag = 1;
             end
+        end
+    end
+    if numOfFactor == 1
+        num_behav = numOfFactor;
+    else
+        if PCAFlag == 1
+            num_behav = numOfPC;
         end
     end
     if ~or(FactorAnalysisFlag,PCAFlag)
@@ -124,7 +131,9 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
         if PCAFlag ==1
             % pca on train data, get coefficient; when test model, apply
             % coeffient to test data to test
-            % [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
+            [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
+            estimateScoreBasedOnModel(train_behav,coeff,mu,score);
+            EstimatedScore = estimateScoreBasedOnModel(test_behav,coeff,mu,score);
             % train_behav = score;
             % factor analysis on train data, get coefficient; when test model, apply
             % coeffient to test data to test

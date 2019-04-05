@@ -1,4 +1,4 @@
-function score = estimateScoreBasedOnModel(y,coeff,mu,score1)
+function EstimatedScore = estimateScoreBasedOnModel(y,coeff,mu,score1)
 % score1 can be empty
 % example model:
 % [coeff1,score1,latent,tsquared,explained,mu] = pca(y,'algorithm','als');
