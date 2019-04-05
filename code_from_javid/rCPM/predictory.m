@@ -1,4 +1,4 @@
-classdef cbase < handle
+classdef predictory < handle
     % phenotypes = {'wms','wais'}
     properties
         group; % all subjects
@@ -30,7 +30,7 @@ classdef cbase < handle
         output;
     end
     methods
-        function this = cbase(group,phenotype,options)
+        function this = predictory(group,phenotype,options)
             this.k = 2;% default folds
             this.alpha = 1e-6;
             this.seed = 665;

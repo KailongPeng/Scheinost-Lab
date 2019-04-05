@@ -1,4 +1,5 @@
-function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total] = mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, seed)
+function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total,FA_Lambda] = ...
+    kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, numOfFactor,numOfPC,seed)
     %CPM Connectome-based predictive modeling using univariate feature selection 
     %
     %   [q_s, r_pearson, r_rank, y, mask] = mCPM(all_mats, all_behav, 0.1)
@@ -51,7 +52,28 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     num_sub_total = size(all_mats, 3);
     num_node = size(all_mats, 1);
     num_task = size(all_mats, 4);
-    num_behav = size(all_behav, 2);
+    
+    %judge whether to use factor analysis or PCA
+    FactorAnalysisFlag = 0;
+    PCAFlag = 0;
+    if exist('numOfFactor','var')
+        if ~isempty(numOfFactor)
+            num_behav = numOfFactor;
+            FactorAnalysisFlag = 1;
+        end
+    else
+        if exist('numOfPC','var')
+            if ~isempty(numOfPC)
+                num_behav = numOfPC;
+                PCAFlag = 1;
+            end
+        end
+    end
+    if ~or(FactorAnalysisFlag,PCAFlag)
+        num_behav = size(all_behav, 2);
+    end
+
+
     is_sym = issymmetric(all_mats(:, :, 1, 1));
     if is_sym
         num_edge = num_node * (num_node - 1) / 2;
@@ -99,13 +121,48 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
         num_train = size(train_behav, 1);
         num_test = size(test_mats, 2);
         
-        % pca on train data, get coefficient; when test model, apply
-        % coeffient to test data to test
-        [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
-        train_behav = score;
-        % factor analysis on train data, get coefficient; when test model, apply
-        % coeffient to test data to test
-        
+        if PCAFlag ==1
+            % pca on train data, get coefficient; when test model, apply
+            % coeffient to test data to test
+            % [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
+            % train_behav = score;
+            % factor analysis on train data, get coefficient; when test model, apply
+            % coeffient to test data to test
+        else
+            if FactorAnalysisFlag == 1
+                [Lambda,Psi,T,stats,F] = factoran(train_behav,numOfFactor,'scores','regression');% [Lambda,Psi,T,stats,F] = factoran(X,m,'scores','regression');
+                %check whether model is right
+                estimateFSBasedOnModel(train_behav,Lambda,Psi,T,numOfFactor,F);
+                %Apply Lambda,Psi,T,m,F on the test set (to compute "actual" FA score)
+                test_FA = estimateFSBasedOnModel(test_behav,Lambda,Psi,T,numOfFactor);
+                train_FA = F;
+                FA_Lambda{i_fold} = Lambda;
+                train_behav = train_FA;
+                test_behav = test_FA;
+            end
+        end
+            %{
+            %Define Mu, PCA coeff for the train set
+            %X,Lambda,Psi,T,m,F
+            this.output(i_fold).numOfFactor = 3;
+            [Lambda,Psi,T,stats,F] = factoran(train.y,this.output(i_fold).numOfFactor,'scores','regression');
+            %check whether model is right
+            estimateFSBasedOnModel(train.y,Lambda,Psi,T,this.output(i_fold).numOfFactor,F);
+            this.output(i_fold).Lambda = Lambda;
+            this.output(i_fold).Psi = Psi;
+            this.output(i_fold).T = T;
+            this.output(i_fold).stats = stats;
+            this.output(i_fold).F = F;
+            train_FA = this.output(i_fold).F;
+            %Apply Lambda,Psi,T,m,F on the test set (to compute "actual" FA score)
+            test_FA = estimateFSBasedOnModel(test.y,this.output(i_fold).Lambda,this.output(i_fold).Psi,this.output(i_fold).T,this.output(i_fold).numOfFactor);
+            %Save these back into the original all_behav indicies in case we want to compute FA stability across i_folds
+            this.output(i_fold).allscores = zeros(size(this.phenotype.all_behav));
+            this.output(i_fold).allscores(train.indx,:) = train_FA;
+            this.output(i_fold).allscores(test.indx,:) = test_FA;
+            train_behav = train_FA;
+            test_behav = test_FA;
+        %}
                 
         % select edges that are significant in every task
         all_p = zeros(num_edge, num_behav, num_task);
@@ -168,6 +225,5 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
         
         tElapsed = toc(tStart)
     end
-    
 end
 

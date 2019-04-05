@@ -1,4 +1,4 @@
-classdef cca < explanatory
+classdef cca < predictory
     properties
         mse;
         all_phenotypes;
@@ -7,7 +7,7 @@ classdef cca < explanatory
     end
     methods
         function this = cca(group,options)
-            this = this@explanatory(group,options);
+            this = this@predictory(group,options);
             this.all_phenotypes = [];
             for i=1:length(this.phenotypes)
                 this.all_phenotypes = [this.all_phenotypes this.phenotypes(i).all_behav];

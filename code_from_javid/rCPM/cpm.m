@@ -1,7 +1,7 @@
-classdef cpm < cbase
+classdef cpm < predictory
     methods
         function this = cpm(group,phenotype,options)
-            this = this@cbase(group,phenotype,options);
+            this = this@predictory(group,phenotype,options);
         end
         function run(this)
             

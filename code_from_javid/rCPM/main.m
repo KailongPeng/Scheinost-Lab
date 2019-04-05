@@ -25,14 +25,17 @@ function [results] = main()
         options.phenotypes = phenotypes;
         options.diagnosis = diagnosis;
     elseif dataset =="math"
-        x = load('/home/kailong/Scheinost-Lab/math/data/all_mats.mat');
-        y = load('/home/kailong/Scheinost-Lab/math/data/all_behav.mat'); 
+        % x = load('/home/kailong/Scheinost-Lab/math/data/all_mats.mat');
+        % y = load('/home/kailong/Scheinost-Lab/math/data/all_behav.mat'); 
+        x = load('/home/kailong/Scheinost-Lab/code_from_javid/rCPM/input','all_mats');
+        y = load('/home/kailong/Scheinost-Lab/code_from_javid/rCPM/input','all_behav');
         y=y.all_behav;
         g = buildGroup(x.all_mats,dataset,zeros(132,1),zeros(132,1),false); % mask=false, Bins
         options = [];
-        options.thresh=0.1;
+        options.thresh1=0.3;
+        options.thresh2=0.1;
         options.seed = randi([1 10000]);
-        options.k = 2;
+        options.k = 10;
         phenotypes = [phenotype('behav',y)];
         options.phenotypes = phenotypes;
         options.diagnosis = zeros(length(y));
@@ -99,7 +102,7 @@ function [results] = main()
         options.phenotypes = phenotypes;
         options.diagnosis = gender;
     end
-    m = cpm(g,phenotypes,options);
+    m = factlysis(g,phenotypes,options);
     m.run();
 %     m = manova(g,options);
     %       m = cca(g,options);
