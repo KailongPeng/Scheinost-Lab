@@ -6,10 +6,12 @@ EstimatedScore = (y - repmat(mu,size(y,1),1))/coeff';
 
 if exist('score1','var')
     if ~isempty(score1)
-        figure;
-        plot(score(:,1),score1(:,1));
-        
-        if sum(sum(EstimatedScore - score1)) ~= 0
+%         figure;
+%         plot(EstimatedScore(:,1),score1(:,1),'.');
+%         [p,S,mu] = polyfit(EstimatedScore(:,1),score1(:,1),1);
+%         y = polyval(p,EstimatedScore(:,1));
+%         hold on; plot(EstimatedScore(:,1),y,'.r')
+        if sum(sum(EstimatedScore - score1)) > 1e-6
             error('calculate Score wrong!\n');
         end
     end
