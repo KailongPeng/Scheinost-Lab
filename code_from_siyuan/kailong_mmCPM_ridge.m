@@ -65,7 +65,7 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
             PCAFlag = 1;
         end
     end
-    if numOfFactor == 1
+    if FactorAnalysisFlag == 1
         num_behav = numOfFactor;
     else
         if PCAFlag == 1
@@ -75,9 +75,13 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     if ~or(FactorAnalysisFlag,PCAFlag)
         num_behav = size(all_behav, 2);
     end
+    if ~exist('singleFactor','var')
+        singleFactor = [];
+    end
     if ~isempty(singleFactor)
         num_behav = 1;
     end
+
 
     is_sym = issymmetric(all_mats(:, :, 1, 1));
     if is_sym

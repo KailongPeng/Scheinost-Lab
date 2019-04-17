@@ -99,6 +99,7 @@ for curr_LatentFactor = 3%1:size(LatentFactorList,2)
 %         kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k);
     numOfFactor = curr_LatentFactor;
     numOfPC = [];
+    singleFactor = [];
     for singleFactor = 1:3
         [q_s{curr_LatentFactor}, r_pearson{curr_LatentFactor}, r_rank{curr_LatentFactor}, ...
             y{curr_LatentFactor}, new_behav{curr_LatentFactor}, all_edge_weight{curr_LatentFactor}, ...
