@@ -26,7 +26,7 @@ for i_sub = sub_list
         end
     end
     if count < 7
-            incomp_id = [incomp_id, i_sub];
+        incomp_id = [incomp_id, i_sub];
     end
 end
 

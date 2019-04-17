@@ -1,5 +1,5 @@
-function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total,FA_Lambda] = ...
-    kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, numOfFactor,numOfPC,seed)
+function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total,FA_Lambda,PCA_Lambda] = ...
+    kailong_mmCPM_ridge(all_mats, all_behav, thresh1, thresh2, lambda, k, numOfFactor, numOfPC,singleFactor, seed)
     %CPM Connectome-based predictive modeling using univariate feature selection 
     %
     %   [q_s, r_pearson, r_rank, y, mask] = mCPM(all_mats, all_behav, 0.1)
@@ -56,21 +56,30 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     %judge whether to use factor analysis or PCA
     FactorAnalysisFlag = 0;
     PCAFlag = 0;
-    if exist('numOfFactor','var')
-        if ~isempty(numOfFactor)
-            num_behav = numOfFactor;
-            FactorAnalysisFlag = 1;
-        end
+    if and(exist('numOfFactor','var'),~isempty(numOfFactor))
+        % num_behav = numOfFactor;
+        FactorAnalysisFlag = 1;
     else
-        if exist('numOfPC','var')
-            if ~isempty(numOfPC)
-                num_behav = numOfPC;
-                PCAFlag = 1;
-            end
+        if and(exist('numOfPC','var'),~isempty(numOfPC))
+            %                 num_behav = numOfPC;
+            PCAFlag = 1;
+        end
+    end
+    if FactorAnalysisFlag == 1
+        num_behav = numOfFactor;
+    else
+        if PCAFlag == 1
+            num_behav = numOfPC;
         end
     end
     if ~or(FactorAnalysisFlag,PCAFlag)
         num_behav = size(all_behav, 2);
+    end
+    if ~exist('singleFactor','var')
+        singleFactor = [];
+    end
+    if ~isempty(singleFactor)
+        num_behav = 1;
     end
 
 
@@ -108,6 +117,10 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
     all_task_weight = zeros(k, num_task);
     all_behav_weight = zeros(k, num_behav);
     lambda_total = zeros(1, k); % store all the lambda
+    PCA_Lambda = [];
+    FA_Lambda = [];
+    PCA_explained = [];
+    FA_explained = [];
     for i_fold = 1 : k
         tStart = tic;
         fprintf('%dth fold\n', i_fold);
@@ -121,48 +134,41 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
         num_train = size(train_behav, 1);
         num_test = size(test_mats, 2);
         
-        if PCAFlag ==1
+        if PCAFlag == 1
             % pca on train data, get coefficient; when test model, apply
             % coeffient to test data to test
-            % [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
-            % train_behav = score;
-            % factor analysis on train data, get coefficient; when test model, apply
-            % coeffient to test data to test
+            [coeff,score,latent,tsquared,explained,mu] = pca(train_behav,'algorithm','als');
+            estimateScoreBasedOnModel(train_behav,coeff,mu,score);
+            EstimatedScore = estimateScoreBasedOnModel(test_behav,coeff,mu);
+            train_behav = score(:,1:numOfPC);
+            test_behav = EstimatedScore(:,1:numOfPC);
+            PCA_Lambda{i_fold} = coeff;
+%             figure;plot([1:size(latent,1)],latent)
+%             figure;plot([1:size(explained,1)],explained)
+            PCA_explained{i_fold} = explained;
         else
             if FactorAnalysisFlag == 1
+                % factor analysis on train data, get coefficient; when test model, apply
+                % coeffient to test data to test
                 [Lambda,Psi,T,stats,F] = factoran(train_behav,numOfFactor,'scores','regression');% [Lambda,Psi,T,stats,F] = factoran(X,m,'scores','regression');
                 %check whether model is right
                 estimateFSBasedOnModel(train_behav,Lambda,Psi,T,numOfFactor,F);
                 %Apply Lambda,Psi,T,m,F on the test set (to compute "actual" FA score)
                 test_FA = estimateFSBasedOnModel(test_behav,Lambda,Psi,T,numOfFactor);
-                train_FA = F;
-                FA_Lambda{i_fold} = Lambda;
-                train_behav = train_FA;
-                test_behav = test_FA;
+                if ~isempty(singleFactor)
+                    FA_Lambda{i_fold} = Lambda(:,singleFactor);
+                    train_behav = F(:,singleFactor);
+                    test_behav = test_FA(:,singleFactor);
+                else
+                    FA_Lambda{i_fold} = Lambda;
+                    train_behav = F;
+                    test_behav = test_FA;
+                end
             end
         end
-            %{
-            %Define Mu, PCA coeff for the train set
-            %X,Lambda,Psi,T,m,F
-            this.output(i_fold).numOfFactor = 3;
-            [Lambda,Psi,T,stats,F] = factoran(train.y,this.output(i_fold).numOfFactor,'scores','regression');
-            %check whether model is right
-            estimateFSBasedOnModel(train.y,Lambda,Psi,T,this.output(i_fold).numOfFactor,F);
-            this.output(i_fold).Lambda = Lambda;
-            this.output(i_fold).Psi = Psi;
-            this.output(i_fold).T = T;
-            this.output(i_fold).stats = stats;
-            this.output(i_fold).F = F;
-            train_FA = this.output(i_fold).F;
-            %Apply Lambda,Psi,T,m,F on the test set (to compute "actual" FA score)
-            test_FA = estimateFSBasedOnModel(test.y,this.output(i_fold).Lambda,this.output(i_fold).Psi,this.output(i_fold).T,this.output(i_fold).numOfFactor);
-            %Save these back into the original all_behav indicies in case we want to compute FA stability across i_folds
-            this.output(i_fold).allscores = zeros(size(this.phenotype.all_behav));
-            this.output(i_fold).allscores(train.indx,:) = train_FA;
-            this.output(i_fold).allscores(test.indx,:) = test_FA;
-            train_behav = train_FA;
-            test_behav = test_FA;
-        %}
+        
+        num_behav = size(train_behav, 2);
+
                 
         % select edges that are significant in every task
         all_p = zeros(num_edge, num_behav, num_task);

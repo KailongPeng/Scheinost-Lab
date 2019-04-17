@@ -87,7 +87,7 @@ no_norm_no_nan_sum_math_matrix = no_norm_no_nan_sum_math_matrix(all(~isnan(no_no
 math_table = [];
 math_table = array2table(no_norm_no_nan_sum_math_matrix,'VariableNames',char_math_VariableNames);
 % writetable(math_table,'/home/kailong/Scheinost-Lab/math/data/math_test_no_norm_no_nan_header','Delimiter',',')
-save('/home/kailong/Scheinost-Lab/math/data/math_test_no_norm_no_nan_header','math_table','math_mapID','char_math_VariableNames','math_Variable_class')
+% save('/home/kailong/Scheinost-Lab/math/data/math_test_no_norm_no_nan_header','math_table','math_mapID','char_math_VariableNames','math_Variable_class')
 
 table_math_VariableNames = cell2table(char_math_VariableNames');
 % writetable(table_math_VariableNames,'/home/kailong/Scheinost-Lab/math/data/math_VariableNames','Delimiter',',')
@@ -121,24 +121,31 @@ for curr_task = 1:length(task_data)
     curr_class = curr_class + 1;
 end
 all_mapID = [1:size(data_all_test,1)];
+save('/home/kailong/Scheinost-Lab/math/data/PredictIntelligenceTests/data_all_test','VariableNames','data_all_test')
 
+%deal with bad subjects -high motion
+load('/home/kailong/Scheinost-Lab/math/data/motion.mat', 'motion_para', 'bad_id');
+data_all_test(bad_id,:) = [];%data_all_test original 132subjects*120tests %now 84sub*120tests
+all_mapID(bad_id) = [];
+
+% deal with bad test - all nan
 char_VariableNames = char(VariableNames);
 char_VariableNames = char_VariableNames(logical(nansum(data_all_test)),:);
 Variable_class = Variable_class(logical(nansum(data_all_test)));
-no_nan_sum_all_test = data_all_test(:,logical(nansum(data_all_test)));
+no_nan_sum_all_test = data_all_test(:,logical(nansum(data_all_test))); %now 84sub*107tests
 
-% exclude test with too many missing data, standard is boxplot outliers
+% deal with bad test, exclude test with too many missing data, standard is boxplot outliers
 num_of_nan = sum(isnan(no_nan_sum_all_test));
 boxplot(num_of_nan')
-remain_ID = num_of_nan<8;
+remain_ID = num_of_nan<2.2;% remain_ID = num_of_nan<8;
 Variable_class = Variable_class(remain_ID);
 char_VariableNames = char_VariableNames(remain_ID,:);
 char_VariableNames = cellstr(char_VariableNames);
+no_nan_sum_all_test = no_nan_sum_all_test(:,remain_ID); %now 84sub*87tests
 
-no_nan_sum_all_test = no_nan_sum_all_test(:,remain_ID);
-
+% get rid of any subjects with any nan
 all_mapID = all_mapID(all(~isnan(no_nan_sum_all_test),2));
-no_nan_sum_all_test = no_nan_sum_all_test(all(~isnan(no_nan_sum_all_test),2),:);
+no_nan_sum_all_test = no_nan_sum_all_test(all(~isnan(no_nan_sum_all_test),2),:);%now 79sub*107tests
 table = [];
 table = array2table(no_nan_sum_all_test,'VariableNames',char_VariableNames);
 % writetable(table,'/home/kailong/Scheinost-Lab/math/data/all_test_no_norm_no_nan','Delimiter',',')
