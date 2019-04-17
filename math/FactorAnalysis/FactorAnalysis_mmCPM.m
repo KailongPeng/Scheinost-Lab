@@ -92,7 +92,7 @@ thresh2 = 0.1;
 tStart1 = tic;
 lambda =[];
 k = 20;
-
+    
 LatentFactorList = [1:5];%size(all_behav,2)];
 for curr_LatentFactor = 1:size(LatentFactorList,2)
 %     [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weight, all_task_weight, lambda_total] = ...
