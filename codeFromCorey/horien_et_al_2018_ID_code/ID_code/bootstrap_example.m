@@ -26,9 +26,9 @@
 % Note that this is a companion code to the script
 % "ID_example.m"
 
-
-clear;
-clc;
+function output = bootstrap_example(all_se1_orig,all_se2_orig)
+% clear;
+% clc;
 
 
 % load connectivity matrices from all subjects (these are named "all_se1_orig"
@@ -48,7 +48,6 @@ clc;
 
 all_default_se1 = all_se1_orig;
 all_default_se2 = all_se2_orig;
-
 
 N_iteration = 1000; 
 rate = zeros(N_iteration,2);
@@ -96,6 +95,8 @@ for it = 1:N_iteration
     rate(it,:) = [count1/no_sub_to_randomize, count2/no_sub_to_randomize];
     
 end
+
+output = rate;
 
 
  

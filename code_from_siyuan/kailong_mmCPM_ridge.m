@@ -143,8 +143,8 @@ function [q_s, r_pearson, r_rank, y, new_behav, all_edge_weight, all_behav_weigh
             train_behav = score(:,1:numOfPC);
             test_behav = EstimatedScore(:,1:numOfPC);
             PCA_Lambda{i_fold} = coeff;
-%             figure;plot([1:size(latent,1)],latent)
-%             figure;plot([1:size(explained,1)],explained)
+            %figure;plot([1:size(latent,1)],latent)
+            %figure;plot([1:size(explained,1)],explained)
             PCA_explained{i_fold} = explained;
         else
             if FactorAnalysisFlag == 1

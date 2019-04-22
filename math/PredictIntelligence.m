@@ -193,8 +193,43 @@ xticks([1:size(x_label,2)])
 xticklabels(strrep(x_label,'_','-'));
 xtickangle(45)
 
+
+FA_Lambda = ((kailong_extractfield(output,'FA_Lambda')));
+t = [];
+for ii = 1:size(FA_Lambda,2)
+    a = zeros(size(FA_Lambda{ii}{1}));
+    for jj = 1:size(FA_Lambda{ii},2)
+        a = a + FA_Lambda{ii}{jj};
+    end
+    t{ii} = a/size(FA_Lambda{ii},2);
+end
+FA_Lambda = t;
+FA_Lambda{2}(FA_Lambda{2}<0.5)=nan;
+figure;imagesc(FA_Lambda{2}>=0.5)
+colorbar
+yticklabels(strrep(RefinedIntelligenceTestList,'_','-'))
+title("2 latent factors");
+x_label = ["1st latent factor" "2nd latent factor"];
+xticks([1:size(x_label,2)])
+xticklabels(strrep(x_label,'_','-'));
 %%
-% load('/home/kailong/Scheinost-Lab/math/data/all_test_no_norm_no_nan_header','all_mapID')
+% load('/home/kailong/Scheinost-Lab/math/data/all_test_no_normFA_Lambda = ((kailong_extractfield(output,'FA_Lambda')));
+t = [];
+for ii = 1:size(FA_Lambda,2)
+    a = zeros(size(FA_Lambda{ii}{1}));
+    for jj = 1:size(FA_Lambda{ii},2)
+        a = a + FA_Lambda{ii}{jj};
+    end
+    t{ii} = a/size(FA_Lambda{ii},2);
+end
+FA_Lambda = t;
+figure;imagesc(FA_Lambda{2}>0.5)
+yticklabels(strrep(RefinedIntelligenceTestList,'_','-'))
+title("2 latent factors");
+x_label = ["1st latent factor" "2nd latent factor"];
+xticks([1:size(x_label,2)])
+xticklabels(strrep(x_label,'_','-'));
+_no_nan_header','all_mapID')
 % all_mats = all_mats(:,:,all_mapID,:);
 % load('/home/kailong/Scheinost-Lab/math/data/motion.mat', 'motion_para', 'bad_id');
 %

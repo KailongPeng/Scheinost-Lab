@@ -1,9 +1,9 @@
-% Copyright 2015 Xilin Shen and Emily Finn 
+% Copyright 2015 Xilin Shen and Emily Finn
 
 % This code is released under the terms of the GNU GPL v2. This code
 % is not FDA approved for clinical use; it is provided
 % freely for research purposes. If using this in a publication
-% please reference this properly as: 
+% please reference this properly as:
 
 % Finn ES, Shen X, Scheinost D, Rosenberg MD, Huang, Chun MM,
 % Papademetris X & Constable RT. (2015). Functional connectome
@@ -25,21 +25,20 @@
 % fingerprinting: Identifying individuals using patterns of brain
 % connectivity. Nature Neuroscience 18, 1664?1671.
 
+function output = ID_example(all_se1,all_se2)
+% clear;
+% clc;
 
-clear;
-clc;
 
-
-% load connectivity matrices from all subjects 
+% load connectivity matrices from all subjects
 
 % connectivity matrices must first be vectorized to length M (assuming
 % matrices are symmetric this can be done using triu or tril and then
 % reshape)
 
-% all_se1 is obtained from session 1 
-% all_se1 is M by N matrix, M is the number of edges in the whole connectivity matrix, N is the number of subjects 
+% all_se1 is obtained from session 1
+% all_se1 is M by N matrix, M is the number of edges in the whole connectivity matrix, N is the number of subjects
 % all_se2 is M by N matrix, from session 2
-
 
 
 count1 = 0;
@@ -52,28 +51,28 @@ tt_to_all2_final = zeros(no_sub);
 
 
 
-for i=1: no_sub;
+for i=1: no_sub
     
-    % using session 1 as database 
+    % using session 1 as database
     
     tt_corr1 = all_se2(:, i);
     
     tt_to_all1 = corr(tt_corr1, all_se1);
     [~, va_id1] = max(tt_to_all1);
-            
-    if( i == va_id1)    
+    
+    if( i == va_id1)
         count1 = count1+1;
     end
-        
+    
     tt_to_all1_final(i,:) = tt_to_all1;
-    % using session 2 as database  
+    % using session 2 as database
     
     tt_corr2 = all_se1(:, i);
     
     tt_to_all2 = corr(tt_corr2, all_se2);
     [~, va_id2] = max(tt_to_all2);
     
-    if( i == va_id2)    
+    if( i == va_id2)
         count2 = count2+1;
     end
     
@@ -81,12 +80,14 @@ for i=1: no_sub;
     
 end
 
- rate1 = count1/no_sub;
- rate2 = count2/no_sub;
- 
+rate1 = count1/no_sub;
+rate2 = count2/no_sub;
 
- 
- 
- 
- 
- 
+output.rate1 = rate1;
+output.rate2 = rate2;
+
+
+
+
+
+

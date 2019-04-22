@@ -27,9 +27,9 @@
 % "ID_example.m" to facilitate statistical evalution of
 % observed results.
 
-
-clear;
-clc;
+function output = permutation_test_example(all_se1_orig,all_se2_orig)
+% clear;
+% clc;
 
 
 % load connectivity matrices from all subjects (these are named "all_se1_orig"
@@ -89,7 +89,7 @@ for it = 1:N_iteration
     rate(it,:) =[count1/no_sub, count2/no_sub];
 end
 
-
+output = rate;
 
 %approximate p-values can be calculated from here by comparing the number of times the
 %permuted ID rate equals or surpasses the ID rate obtained with the
