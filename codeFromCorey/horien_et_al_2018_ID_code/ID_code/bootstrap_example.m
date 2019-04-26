@@ -68,7 +68,7 @@ for it = 1:N_iteration
     count1 = 0;
     count2 = 0;
     
-    for i=1: no_sub_to_randomize;
+    for i=1: no_sub_to_randomize
         
         % using session 1 as database
         
